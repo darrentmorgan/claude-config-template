@@ -49,17 +49,17 @@ elif [ -f "bun.lockb" ]; then
     PKG_MANAGER="bun"
 else
     echo -e "${YELLOW}No lock file found. Which package manager do you use?${NC}"
-    echo "1) npm"
-    echo "2) pnpm"
+    echo "1) pnpm (default)"
+    echo "2) npm"
     echo "3) yarn"
     echo "4) bun"
-    read -p "Select (1-4): " pm_choice
+    read -p "Select (1-4, or press Enter for pnpm): " pm_choice
     case $pm_choice in
-        1) PKG_MANAGER="npm" ;;
-        2) PKG_MANAGER="pnpm" ;;
+        1|"") PKG_MANAGER="pnpm" ;;
+        2) PKG_MANAGER="npm" ;;
         3) PKG_MANAGER="yarn" ;;
         4) PKG_MANAGER="bun" ;;
-        *) echo "Invalid choice. Defaulting to npm"; PKG_MANAGER="npm" ;;
+        *) echo "Invalid choice. Defaulting to pnpm"; PKG_MANAGER="pnpm" ;;
     esac
 fi
 
