@@ -15,11 +15,23 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Detect current directory
+# CRITICAL: Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Verify template files exist
+if [ ! -d "$SCRIPT_DIR/agents" ] || [ ! -d "$SCRIPT_DIR/hooks" ]; then
+    echo -e "${RED}❌ Error: Template files not found!${NC}"
+    echo "This script must be run from the claude-config-template directory."
+    echo "Script location: $SCRIPT_DIR"
+    exit 1
+fi
+
+# Detect current directory (where we're installing)
 CURRENT_DIR=$(pwd)
 PROJECT_NAME=$(basename "$CURRENT_DIR")
 
-echo -e "${BLUE}Current directory: $CURRENT_DIR${NC}"
+echo -e "${BLUE}Template location: $SCRIPT_DIR${NC}"
+echo -e "${BLUE}Installing to: $CURRENT_DIR${NC}"
 echo -e "${BLUE}Detected project name: $PROJECT_NAME${NC}"
 echo ""
 
@@ -105,12 +117,12 @@ mkdir -p .claude
 
 # Copy directory structure
 echo "📁 Copying configuration files..."
-cp -r agents .claude/
-cp -r hooks .claude/
-cp -r commands .claude/
-cp -r docs .claude/ 2>/dev/null || true
-cp -r scripts .claude/ 2>/dev/null || true
-cp settings.local.json .claude/
+cp -r "$SCRIPT_DIR/agents" .claude/
+cp -r "$SCRIPT_DIR/hooks" .claude/
+cp -r "$SCRIPT_DIR/commands" .claude/
+cp -r "$SCRIPT_DIR/docs" .claude/ 2>/dev/null || true
+cp -r "$SCRIPT_DIR/scripts" .claude/ 2>/dev/null || true
+cp "$SCRIPT_DIR/settings.local.json" .claude/
 
 # Step 5: Replace placeholders
 echo ""
