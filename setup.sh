@@ -225,7 +225,30 @@ else
     echo "No git repository found - skipping git integration"
 fi
 
-# Step 9: Final instructions
+# Step 9: Update global CLAUDE.md (optional)
+echo ""
+echo -e "${YELLOW}Step 9: Global CLAUDE.md Update (Optional)${NC}"
+echo "Would you like to add agent reference documentation to your global CLAUDE.md?"
+echo "This adds a comprehensive agent guide to ~/.claude/CLAUDE.md"
+echo ""
+read -p "Update CLAUDE.md with agent reference? (y/n): " update_claude_md
+
+if [ "$update_claude_md" = "y" ]; then
+    if [ -f "$SCRIPT_DIR/scripts/update-claude-md.sh" ]; then
+        echo "Running CLAUDE.md updater..."
+        bash "$SCRIPT_DIR/scripts/update-claude-md.sh"
+    else
+        echo -e "${RED}❌ Error: update-claude-md.sh script not found${NC}"
+        echo "You can manually add the agent section from:"
+        echo "  $SCRIPT_DIR/docs/CLAUDE_MD_AGENT_SECTION.md"
+    fi
+else
+    echo "Skipped CLAUDE.md update"
+    echo -e "${BLUE}Tip: You can run this later with:${NC}"
+    echo "  bash $SCRIPT_DIR/scripts/update-claude-md.sh"
+fi
+
+# Step 10: Final instructions
 echo ""
 echo -e "${GREEN}=================================="
 echo "✅ Setup Complete!"
@@ -240,8 +263,14 @@ echo "3. Try a command: /generate-api or /create-component"
 echo "4. Hooks will automatically run on Edit/Write/Commit"
 echo ""
 echo -e "${YELLOW}Documentation:${NC}"
+echo "  - Agent reference: .claude/docs/AGENT_REFERENCE.md"
 echo "  - Agent system: .claude/docs/MCP_DELEGATION_GUIDE.md"
+echo "  - Agent configs: .claude/agents/configs/README.md"
 echo "  - Hooks: .claude/hooks/README.md"
 echo "  - Commands: .claude/commands/*.md"
+echo ""
+echo -e "${YELLOW}Global Config:${NC}"
+echo "  - CLAUDE.md: ~/.claude/CLAUDE.md (global instructions)"
+echo "  - Shared agents: ~/.claude/agents/shared/ (if enabled)"
 echo ""
 echo -e "${GREEN}Happy coding with Claude! 🚀${NC}"

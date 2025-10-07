@@ -12,6 +12,7 @@ A reusable, production-ready configuration system for Claude Code that brings au
 - ✅ **Specialized Agent System** - Pattern-based delegation to 15+ expert agents
 - ✅ **Automated Quality Gates** - Pre-commit hooks with linting, type-checking, and AI review
 - ✅ **MCP Context Optimization** - 74% context reduction (~92k tokens saved)
+- ✅ **CLAUDE.md Integration** - Global agent reference for automatic delegation across all projects
 - ✅ **Framework Agnostic** - Auto-detects and configures for React/Vue/Express/Next.js
 - ✅ **Global Agent Sharing** - Consistent behavior across all projects
 - ✅ **Custom Slash Commands** - `/generate-api`, `/create-component`, `/deploy`, etc.
@@ -35,7 +36,12 @@ claude-config-template/
 │   ├── deploy.md             # Autonomous deployment
 │   └── run-qa.md             # E2E testing workflow
 ├── docs/                      # Documentation
+│   ├── AGENT_REFERENCE.md     # Complete agent documentation
+│   ├── CLAUDE_MD_INTEGRATION.md # Global CLAUDE.md setup guide
+│   ├── CLAUDE_MD_AGENT_SECTION.md # Template for CLAUDE.md
 │   └── MCP_DELEGATION_GUIDE.md
+├── scripts/                   # Helper scripts
+│   └── update-claude-md.sh    # Update global CLAUDE.md with agents
 ├── setup.sh                   # Interactive installation script
 └── README.md                  # This file
 ```
@@ -178,6 +184,36 @@ File changes auto-route to appropriate agents:
 - API contracts → `typescript-pro`
 - Migrations → `backend-architect`
 
+### CLAUDE.md Integration
+
+The setup script offers to update your global `~/.claude/CLAUDE.md` file with comprehensive agent documentation:
+
+```bash
+Step 9: Global CLAUDE.md Update (Optional)
+Update CLAUDE.md with agent reference? (y/n): y
+```
+
+**What this adds:**
+- Complete agent reference (15+ specialized agents)
+- Automatic keyword-based routing rules
+- Response format standards
+- Quality gate configurations
+- Best practices and anti-patterns
+
+**Benefits:**
+- 🎯 **Global Awareness**: Claude knows about all agents in every project
+- 🚀 **Auto-Routing**: Keyword detection automatically delegates tasks
+- 📉 **Context Optimization**: 74% reduction in main agent context (125k → 33k tokens)
+- 🔒 **MCP Isolation**: Main orchestrator has ZERO MCP servers, all delegated
+
+**Manual Update:**
+```bash
+cd /path/to/claude-config-template
+bash scripts/update-claude-md.sh
+```
+
+**Documentation**: See `.claude/docs/CLAUDE_MD_INTEGRATION.md` for complete guide
+
 ## 🌍 Global Agent Sharing
 
 ### Setup Global Agents
@@ -254,10 +290,13 @@ All linked projects get updates immediately.
 
 ## 📚 Documentation
 
-- **Agent System**: `.claude/docs/MCP_DELEGATION_GUIDE.md`
-- **Hooks**: `.claude/hooks/README.md`
-- **Commands**: `.claude/commands/*.md`
-- **Global Init**: `~/.claude/commands/init-claude-config.md`
+- **Agent Reference**: `.claude/docs/AGENT_REFERENCE.md` - Complete agent documentation
+- **CLAUDE.md Integration**: `.claude/docs/CLAUDE_MD_INTEGRATION.md` - Global configuration guide
+- **Agent System**: `.claude/docs/MCP_DELEGATION_GUIDE.md` - MCP delegation patterns
+- **Agent Configs**: `.claude/agents/configs/README.md` - Individual agent documentation
+- **Hooks**: `.claude/hooks/README.md` - Hook system reference
+- **Commands**: `.claude/commands/*.md` - Slash command documentation
+- **Global Config**: `~/.claude/CLAUDE.md` - Global instructions (updated during setup)
 
 ## 🤝 Distribution
 
