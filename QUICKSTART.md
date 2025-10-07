@@ -21,7 +21,7 @@ cd /path/to/your/project
 cd /path/to/your/project
 
 # Install template
-npx degit your-username/claude-config-template .claude-temp
+npx degit darrentmorgan/claude-config-template .claude-temp
 .claude-temp/setup.sh
 rm -rf .claude-temp
 ```

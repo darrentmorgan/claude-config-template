@@ -1,6 +1,11 @@
 # Claude Code Configuration Template
 
+[![GitHub](https://img.shields.io/badge/GitHub-darrentmorgan%2Fclaude--config--template-blue?logo=github)](https://github.com/darrentmorgan/claude-config-template)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A reusable, production-ready configuration system for Claude Code that brings autonomous development workflows to any project.
+
+> **⚡ Quick Install**: `npx degit darrentmorgan/claude-config-template .claude-temp && .claude-temp/setup.sh && rm -rf .claude-temp`
 
 ## 🚀 Features
 
@@ -39,24 +44,28 @@ claude-config-template/
 
 ### Installation
 
-**Option 1: From this directory**
+**Option 1: Using degit (Recommended)**
 ```bash
 cd /path/to/your/project
-/path/to/claude-config-template/setup.sh
-```
-
-**Option 2: Using degit (if published)**
-```bash
-cd /path/to/your/project
-npx degit your-username/claude-config-template .claude-temp
+npx degit darrentmorgan/claude-config-template .claude-temp
 .claude-temp/setup.sh
 rm -rf .claude-temp
 ```
 
-**Option 3: Using global command**
+**Option 2: Using git clone**
 ```bash
 cd /path/to/your/project
-/init-claude-config
+git clone https://github.com/darrentmorgan/claude-config-template.git .claude-temp
+.claude-temp/setup.sh
+rm -rf .claude-temp
+```
+
+**Option 3: GitHub Template (after marking as template)**
+```bash
+# On GitHub, click "Use this template" → Create new repository
+# Then clone and run:
+cd your-new-repo
+./setup.sh
 ```
 
 ### What the Setup Does
@@ -254,34 +263,35 @@ All linked projects get updates immediately.
 
 ### As GitHub Template
 
-1. Create new repo from this template
-2. Users install via:
-   ```bash
-   npx degit your-username/claude-config-template .claude-temp
-   .claude-temp/setup.sh
-   ```
+**Repository**: https://github.com/darrentmorgan/claude-config-template
 
-### As NPM Package
+Users install via:
+```bash
+npx degit darrentmorgan/claude-config-template .claude-temp
+.claude-temp/setup.sh
+rm -rf .claude-temp
+```
 
-1. Publish to npm (future)
-2. Users install via:
-   ```bash
-   npx @your-org/init-claude-config
-   ```
+Or use GitHub's "Use this template" feature after [marking as template](https://github.com/darrentmorgan/claude-config-template/settings).
+
+### As NPM Package (Future)
+
+```bash
+# Coming soon
+npx @darrentmorgan/init-claude-config
+```
 
 ### As Git Submodule
 
-1. Add to project:
-   ```bash
-   git submodule add https://github.com/your-username/claude-config-template .claude-template
-   .claude-template/setup.sh
-   ```
+```bash
+# Add to project
+git submodule add https://github.com/darrentmorgan/claude-config-template .claude-template
+.claude-template/setup.sh
 
-2. Update:
-   ```bash
-   git submodule update --remote
-   .claude-template/setup.sh
-   ```
+# Update
+git submodule update --remote
+.claude-template/setup.sh
+```
 
 ## 🐛 Troubleshooting
 
@@ -351,10 +361,30 @@ After installation:
 
 ## 📄 License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-**Created by**: [Your Name]
+## 🙏 Acknowledgments
+
+Built with [Claude Code](https://claude.com/code) - AI-powered development assistant
+
+## 🔗 Links
+
+- **Repository**: https://github.com/darrentmorgan/claude-config-template
+- **Issues**: https://github.com/darrentmorgan/claude-config-template/issues
+- **Discussions**: https://github.com/darrentmorgan/claude-config-template/discussions
+
+## 📊 Stats
+
+![GitHub stars](https://img.shields.io/github/stars/darrentmorgan/claude-config-template?style=social)
+![GitHub forks](https://img.shields.io/github/forks/darrentmorgan/claude-config-template?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/darrentmorgan/claude-config-template?style=social)
+
+---
+
+**Created by**: [Darren Morgan](https://github.com/darrentmorgan)
 **Template Version**: 1.0.0
 **Last Updated**: 2025-10-08
+
+⭐ If you find this template useful, please consider giving it a star!
