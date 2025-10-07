@@ -23,6 +23,9 @@ logs/
 .claude/.*.json
 .claude/logs/
 
+# Ignore .claude directory in template (created by setup.sh testing)
+.claude/
+
 # Node modules (if accidentally copied)
 node_modules/
 
