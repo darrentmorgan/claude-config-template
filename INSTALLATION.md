@@ -4,11 +4,25 @@
 
 ### Fresh Install
 
+**Method 1: Wrapper Script (Best Visual Feedback)**
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/darrentmorgan/claude-config-template/main/install.sh)
+```
+
+This provides the best installation experience with:
+- 🔄 Animated spinner during GitHub download
+- 📊 Progress bars for file operations
+- ✅ Clear step-by-step status updates
+- 🧹 Automatic cleanup
+
+**Method 2: Direct Install (Alternative)**
+
 ```bash
 npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
 ```
 
-This will:
+Both methods will:
 - ✅ Download latest template
 - ✅ Run interactive setup with real-time progress indicators
 - ✅ Copy all files to `.claude/` directory (with progress bars)
@@ -16,7 +30,8 @@ This will:
 - ✅ Set up hooks and scripts
 - ✅ Clean up temporary files
 
-**Visual Feedback**: The installer now shows:
+**Visual Feedback**: The installer shows:
+- 🔄 Download progress spinner
 - 📊 Progress bars for file copying operations
 - ⏳ Real-time status updates
 - 📁 Which files/directories are being processed
