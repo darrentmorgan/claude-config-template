@@ -211,6 +211,12 @@ else
     cp "$SCRIPT_DIR/settings.local.json" .claude/
 fi
 
+# Copy .env template if doesn't exist
+if [ ! -f ".claude/.env" ] && [ -f "$SCRIPT_DIR/.env.template" ]; then
+    cp "$SCRIPT_DIR/.env.template" .claude/.env
+    echo -e "${GREEN}✓ Created .claude/.env from template${NC}"
+fi
+
 printf "\r%80s\r" " "  # Clear progress line
 
 # Step 5: Replace placeholders

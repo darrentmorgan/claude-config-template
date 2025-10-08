@@ -55,6 +55,18 @@ export NODE_OPTIONS="--max-old-space-size=8192"
 
 Increases heap from 4GB to 8GB. Not a permanent solution.
 
+#### 5. Enable Memory Protection Hooks (Recommended)
+```bash
+# Check current memory usage
+bash .claude/scripts/check-memory.sh
+```
+
+The template includes automatic memory protection:
+- **Context Monitor**: Warns at 60%, 70%, 80% context usage
+- **Memory Guard**: Blocks requests above 7GB RSS (80% of heap)
+- **Log Archival**: Auto-archives logs > 1000 lines
+- **Configuration**: Edit `.claude/.env` to customize thresholds
+
 ---
 
 ## Context Usage Best Practices
@@ -221,6 +233,73 @@ Edit `.claude/commands/workflows/scout.md` to match your project:
 Default scan locations:
 - app/ (change to your app directory)
 - src/components/ (change to your components path)
+```
+
+---
+
+## Memory Protection System
+
+### New: Automatic Memory Guards
+
+The template now includes automatic memory protection hooks:
+
+#### Context Monitor (`hooks/context-monitor.sh`)
+- Runs after each tool use
+- Warns at configurable thresholds (default: 60%, 70%, 80%)
+- Non-blocking - allows work to continue
+
+**Configure:**
+```bash
+# Edit .claude/.env
+CLAUDE_WARN_60=60
+CLAUDE_WARN_70=70
+CLAUDE_WARN_80=80
+```
+
+#### Memory Guard (`hooks/memory-guard.sh`)
+- Runs before processing requests
+- Checks Claude process RSS (memory usage)
+- **Blocks requests** if memory exceeds limit (default: 7GB)
+- Forces user to restart session
+
+**Configure:**
+```bash
+# Edit .claude/.env
+CLAUDE_MEMORY_LIMIT_MB=7168  # 7GB
+CLAUDE_ENABLE_MEMORY_GUARD=true
+```
+
+#### Log Archival (`hooks/archive-logs.sh`)
+- Runs periodically
+- Archives logs when they exceed threshold (default: 1000 lines)
+- Prevents unbounded log growth
+
+**Configure:**
+```bash
+# Edit .claude/.env
+CLAUDE_LOG_ARCHIVE_THRESHOLD=1000
+CLAUDE_AUTO_ARCHIVE_LOGS=true
+```
+
+#### Manual Memory Check
+```bash
+# Run anytime to see current memory usage
+bash .claude/scripts/check-memory.sh
+```
+
+**Output:**
+```
+═══════════════════════════════════════════
+  Claude Code Memory Status
+═══════════════════════════════════════════
+
+Process: claude (PID: 12345)
+Memory: 3456MB (OK)
+
+Total: 1 process(es), 3456MB RSS
+═══════════════════════════════════════════
+
+✅ Memory usage is healthy
 ```
 
 ---
