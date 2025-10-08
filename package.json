@@ -1,0 +1,28 @@
+{
+  "name": "claude-config-template",
+  "version": "2.0.0",
+  "description": "Production-ready Claude Code configuration with autonomous workflows",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Run tests in your project after installation\" && exit 0",
+    "setup": "bash setup.sh"
+  },
+  "devDependencies": {
+    "minimatch": "^10.0.3",
+    "tsx": "^4.20.6"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "agents",
+    "automation",
+    "ai",
+    "development-workflow"
+  ],
+  "author": "Darren Morgan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darrentmorgan/claude-config-template.git"
+  }
+}
