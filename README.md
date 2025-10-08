@@ -7,6 +7,22 @@ A reusable, production-ready configuration system for Claude Code that brings au
 
 > **⚡ Quick Install**: `npx degit darrentmorgan/claude-config-template .claude-temp && .claude-temp/setup.sh && rm -rf .claude-temp`
 
+---
+
+## 🔥 **NEW: Delegation Fix v2.0.0** (2025-10-08)
+
+**Critical Update**: Fixes context exhaustion issues with automated enforcement system.
+
+- ✅ **70-85% delegation rate improvement** (was <10%, now 70-85%)
+- ✅ **60-75% context reduction** (from 95-100% to 20-40% usage)
+- ✅ **Automated agent routing** via pre-request hooks
+- ✅ **Tool restrictions** create friction before code edits
+- ✅ **Updated CLAUDE.md protocol** replaces old agent-organizer phantom
+
+📚 **See**: [Release Notes](DELEGATION_FIX_RELEASE_NOTES.md) | [Implementation Guide](docs/DELEGATION_FIX_GUIDE.md) | [New Delegation Protocol](docs/CLAUDE_MD_DELEGATION_PROTOCOL.md)
+
+---
+
 ## 🚀 Features
 
 - ✅ **Specialized Agent System** - Pattern-based delegation to 16+ expert agents

@@ -5,12 +5,30 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(pnpm :*::*)",
+      "Bash(npm :*::*)",
       "Bash(curl:*)",
       "Bash(chmod:*)",
-      "Task(*:*)"
+      "Task(*:*)",
+      "Read(*.md)",
+      "Read(.env*)",
+      "Read(*.json)",
+      "Grep",
+      "Glob",
+      "TodoWrite"
     ],
     "deny": [],
-    "ask": []
+    "ask": [
+      "Edit(**/*.tsx)",
+      "Edit(**/*.ts)",
+      "Edit(**/*.jsx)",
+      "Edit(**/*.js)",
+      "Edit(src/**)",
+      "Write(src/**)",
+      "Write(**/*.tsx)",
+      "Write(**/*.ts)",
+      "Write(**/*.jsx)",
+      "Write(**/*.js)"
+    ]
   },
   "hooks": {
     "PostToolUse": [
@@ -38,6 +56,11 @@
     "UserPromptSubmit": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
+            "timeout": 10
+          },
           {
             "type": "command",
             "command": "echo '🤖 Claude Code session active' >> .claude/.session.log",
