@@ -4,6 +4,8 @@
 
 ### Fresh Install
 
+**📋 Copy and paste this into your project directory:**
+
 ```bash
 npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
 ```
@@ -23,13 +25,13 @@ This will:
 
 ### Update Existing Installation
 
+**📋 Copy and paste to update your configuration:**
+
 ```bash
-npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
+npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claude-temp && bash setup.sh --update && cd .. && rm -rf .claude-temp
 ```
 
-When prompted "`.claude` directory already exists", choose:
-- **y** to overwrite (recommended for updates)
-- **n** to cancel
+> **Note**: The `--update` flag preserves your existing `settings.local.json` customizations
 
 ---
 
@@ -68,7 +70,7 @@ your-project/
 
 ## 🔧 Manual Installation (Advanced)
 
-If you prefer manual control:
+If you prefer manual control, **copy and paste these commands:**
 
 ```bash
 # 1. Download template
@@ -90,7 +92,7 @@ rm -rf claude-template
 
 ## 🔄 Update Without Overwriting Customizations
 
-If you've customized your config and want to update specific files only:
+If you've customized your config and want to update specific files only, **copy and run:**
 
 ```bash
 # Download template
@@ -116,6 +118,8 @@ chmod +x .claude/hooks/*.sh .claude/scripts/*.ts
 ---
 
 ## ✅ Verify Installation
+
+**📋 Run these commands to verify everything is working:**
 
 ```bash
 # Test delegation router
@@ -191,6 +195,8 @@ your-project/
 
 ## 🎯 Quick Start After Install
 
+**📋 Try these commands to get started:**
+
 ```bash
 # 1. Test parallel execution
 npx tsx .claude/scripts/delegation-router.ts "Add login form" --plan
@@ -211,6 +217,8 @@ ls .claude/docs/
 
 ### "delegation-router.ts not found"
 
+**📋 Run these commands:**
+
 ```bash
 # Check if .claude/scripts exists
 ls -la .claude/scripts/
@@ -221,6 +229,8 @@ cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
 ```
 
 ### "Agent configs missing MCP servers"
+
+**📋 Run these commands:**
 
 ```bash
 # Check if configs exist
@@ -233,6 +243,8 @@ rm -rf .claude-temp
 ```
 
 ### "Hook not executable"
+
+**📋 Run this command:**
 
 ```bash
 # Make all hooks executable
@@ -254,7 +266,7 @@ After installation:
    - Edit `.claude/agents/delegation-map.json`
    - Adjust `.claude/settings.local.json`
 
-3. **Test delegation**:
+3. **Test delegation** - 📋 Try these commands:
    ```bash
    # Try different scenarios
    npx tsx .claude/scripts/delegation-router.ts "Create API endpoint" --plan
@@ -262,7 +274,7 @@ After installation:
    npx tsx .claude/scripts/delegation-router.ts "Optimize database query" --plan
    ```
 
-4. **Update global CLAUDE.md** (optional):
+4. **Update global CLAUDE.md** (optional) - 📋 Run:
    ```bash
    bash .claude/scripts/update-claude-md.sh
    ```

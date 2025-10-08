@@ -5,12 +5,18 @@
 
 A reusable, production-ready configuration system for Claude Code that brings autonomous development workflows to any project.
 
-> **⚡ Quick Install**:
+### 🚀 Quick Install
+>
+> **Copy and run this command in your project directory:**
+>
 > ```bash
 > npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
 > ```
 >
-> **🔄 Update Existing**:
+> ### 🔄 Update Existing Installation
+>
+> **Copy and run to update:**
+>
 > ```bash
 > npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claude-temp && bash setup.sh --update && cd .. && rm -rf .claude-temp
 > ```
