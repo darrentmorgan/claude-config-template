@@ -40,7 +40,7 @@ A reusable, production-ready configuration system for Claude Code that brings au
 ## 🚀 Features
 
 - ✅ **Parallel Agent Execution** - Run multiple agents concurrently (66% faster than sequential)
-- ✅ **Specialized Agent System** - Pattern-based delegation to 16+ expert agents
+- ✅ **Specialized Agent System** - Pattern-based delegation to 18+ expert agents (including Vercel & Stripe)
 - ✅ **Scout → Plan → Build Workflows** - Autonomous multi-phase implementation with TDD enforcement
 - ✅ **Automated Quality Gates** - Pre-commit hooks with linting, type-checking, and AI review
 - ✅ **MCP Context Optimization** - 74-90% context reduction (~92k+ tokens saved)
@@ -366,6 +366,7 @@ All linked projects get updates immediately.
 - **Agent Reference**: `.claude/docs/AGENT_REFERENCE.md` - Complete agent documentation
 - **CLAUDE.md Integration**: `.claude/docs/CLAUDE_MD_INTEGRATION.md` - Global configuration guide
 - **Agent System**: `.claude/docs/MCP_DELEGATION_GUIDE.md` - MCP delegation patterns
+- **Troubleshooting**: `.claude/docs/TROUBLESHOOTING.md` - Memory issues, delegation problems, performance tips
 - **Agent Configs**: `.claude/agents/configs/README.md` - Individual agent documentation
 - **Hooks**: `.claude/hooks/README.md` - Hook system reference
 - **Commands**: `.claude/commands/*.md` - Slash command documentation
