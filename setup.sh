@@ -24,6 +24,38 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Progress spinner
+spinner() {
+    local pid=$1
+    local message=$2
+    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local delay=0.1
+
+    while kill -0 $pid 2>/dev/null; do
+        local temp=${spinstr#?}
+        printf " [%c] %s" "$spinstr" "$message"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\r"
+    done
+    printf "    \r"
+}
+
+# Progress bar
+show_progress() {
+    local current=$1
+    local total=$2
+    local message=$3
+    local percent=$((current * 100 / total))
+    local filled=$((percent / 2))
+    local empty=$((50 - filled))
+
+    printf "\r["
+    printf "%${filled}s" | tr ' ' '█'
+    printf "%${empty}s" | tr ' ' '░'
+    printf "] %3d%% %s" "$percent" "$message"
+}
+
 # CRITICAL: Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -37,7 +69,14 @@ fi
 
 # Detect current directory (where we're installing)
 CURRENT_DIR=$(pwd)
-PROJECT_NAME=$(basename "$CURRENT_DIR")
+CURRENT_BASENAME=$(basename "$CURRENT_DIR")
+
+# If we're in a temporary directory (.claude-temp), use parent directory name
+if [ "$CURRENT_BASENAME" = ".claude-temp" ]; then
+    PROJECT_NAME=$(basename "$(dirname "$CURRENT_DIR")")
+else
+    PROJECT_NAME="$CURRENT_BASENAME"
+fi
 
 echo -e "${BLUE}Template location: $SCRIPT_DIR${NC}"
 echo -e "${BLUE}Installing to: $CURRENT_DIR${NC}"
@@ -150,20 +189,29 @@ fi
 
 mkdir -p .claude
 
-# Copy directory structure
+# Copy directory structure with progress
 echo "📁 Copying configuration files..."
-cp -r "$SCRIPT_DIR/agents" .claude/
-cp -r "$SCRIPT_DIR/hooks" .claude/
-cp -r "$SCRIPT_DIR/commands" .claude/
-cp -r "$SCRIPT_DIR/docs" .claude/ 2>/dev/null || true
-cp -r "$SCRIPT_DIR/scripts" .claude/ 2>/dev/null || true
+COPY_ITEMS=("agents" "hooks" "commands" "docs" "scripts")
+TOTAL_ITEMS=${#COPY_ITEMS[@]}
+CURRENT=0
+
+for item in "${COPY_ITEMS[@]}"; do
+    CURRENT=$((CURRENT + 1))
+    if [ -d "$SCRIPT_DIR/$item" ]; then
+        show_progress $CURRENT $TOTAL_ITEMS "Copying $item..."
+        cp -r "$SCRIPT_DIR/$item" .claude/ 2>/dev/null || true
+    fi
+done
 
 # Handle settings.local.json differently for updates
 if [ "$UPDATE_MODE" = true ] && [ -f ".claude/settings.local.json" ]; then
+    printf "\r%80s\r" " "  # Clear progress line
     echo -e "${BLUE}ℹ  Preserving existing settings.local.json${NC}"
 else
     cp "$SCRIPT_DIR/settings.local.json" .claude/
 fi
+
+printf "\r%80s\r" " "  # Clear progress line
 
 # Step 5: Replace placeholders
 echo ""
@@ -187,12 +235,21 @@ replace_placeholders() {
 }
 
 # Replace in all hook files
-for file in .claude/hooks/*.sh; do
+HOOK_FILES=(.claude/hooks/*.sh)
+TOTAL_HOOKS=${#HOOK_FILES[@]}
+CURRENT_HOOK=0
+
+for file in "${HOOK_FILES[@]}"; do
+    CURRENT_HOOK=$((CURRENT_HOOK + 1))
+    show_progress $CURRENT_HOOK $TOTAL_HOOKS "Processing $(basename "$file")..."
     replace_placeholders "$file"
     chmod +x "$file"
 done
 
+printf "\r%80s\r" " "  # Clear progress line
+
 # Replace in config files
+echo "📝 Updating configuration files..."
 replace_placeholders ".claude/settings.local.json"
 replace_placeholders ".claude/agents/delegation-map.json"
 
@@ -209,17 +266,24 @@ if [ "$share_agents" = "y" ]; then
     GLOBAL_AGENTS_DIR="$HOME/.claude/agents/shared"
 
     if [ ! -d "$GLOBAL_AGENTS_DIR" ]; then
-        echo "Creating global agents directory..."
+        echo "📦 Creating global agents directory..."
         mkdir -p "$GLOBAL_AGENTS_DIR"
 
         # Copy agent configs to global location
+        show_progress 1 3 "Copying agent configs..."
         cp -r .claude/agents/configs "$GLOBAL_AGENTS_DIR/"
+
+        show_progress 2 3 "Copying MCP mappings..."
         cp .claude/agents/mcp-mapping.json "$GLOBAL_AGENTS_DIR/"
+
+        show_progress 3 3 "Global agents setup complete"
+        printf "\n"
 
         echo -e "${GREEN}✓ Global agents created at ~/.claude/agents/shared${NC}"
     fi
 
     # Create symlink
+    echo "🔗 Creating symlink to global agents..."
     rm -rf .claude/agents/configs
     ln -s "$GLOBAL_AGENTS_DIR/configs" .claude/agents/configs
 
@@ -290,6 +354,10 @@ else
 fi
 
 # Step 10: Final instructions
+echo ""
+printf "["
+printf "%50s" | tr ' ' '█'
+printf "] 100%% Setup complete!\n"
 echo ""
 echo -e "${GREEN}=================================="
 echo "✅ Setup Complete!"

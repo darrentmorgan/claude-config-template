@@ -10,11 +10,16 @@ npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp &
 
 This will:
 - ✅ Download latest template
-- ✅ Run interactive setup
-- ✅ Copy all files to `.claude/` directory
+- ✅ Run interactive setup with real-time progress indicators
+- ✅ Copy all files to `.claude/` directory (with progress bars)
 - ✅ Install all agent configs with MCP server assignments
 - ✅ Set up hooks and scripts
 - ✅ Clean up temporary files
+
+**Visual Feedback**: The installer now shows:
+- 📊 Progress bars for file copying operations
+- ⏳ Real-time status updates
+- 📁 Which files/directories are being processed
 
 ### Update Existing Installation
 
