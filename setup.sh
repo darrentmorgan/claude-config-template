@@ -359,7 +359,109 @@ else
     echo "  bash $SCRIPT_DIR/scripts/update-claude-md.sh"
 fi
 
-# Step 10: Final instructions
+# Step 10: Environment Configuration
+echo ""
+echo -e "${YELLOW}Step 10: Environment Configuration (Optional)${NC}"
+echo "Configure execution mode and memory settings?"
+echo ""
+echo "Options:"
+echo "  1) Sequential mode (default) - 100% stable, slower"
+echo "  2) Safe Parallel mode - 95% stable, 30% faster"
+echo "  3) Skip environment setup"
+echo ""
+read -p "Select (1-3): " env_choice
+
+if [ "$env_choice" = "2" ]; then
+    ENV_CONTENT="# Claude Code Safe Parallel Configuration
+SAFE_PARALLEL=true
+CONCURRENCY_LIMIT=2
+MEMORY_THRESHOLD=4096
+
+# Memory Management
+CLAUDE_MEMORY_LIMIT_MB=6144
+
+# Node.js Options (add to shell profile separately)
+# export NODE_OPTIONS=\"--expose-gc --max-old-space-size=8192\"
+"
+
+    echo ""
+    echo "Where would you like to save this configuration?"
+    echo "  1) .env file in this project (recommended)"
+    echo "  2) Shell profile (~/.zshrc or ~/.bashrc)"
+    echo "  3) Both"
+    read -p "Select (1-3): " save_choice
+
+    case $save_choice in
+        1|3)
+            # Create .env file
+            echo "$ENV_CONTENT" > .env
+            echo -e "${GREEN}✓ Created .env file with safe parallel configuration${NC}"
+
+            # Add .env to .gitignore
+            if [ -f ".gitignore" ]; then
+                if ! grep -q "^\.env$" .gitignore 2>/dev/null; then
+                    echo ".env" >> .gitignore
+                    echo -e "${GREEN}✓ Added .env to .gitignore${NC}"
+                fi
+            fi
+            ;;
+    esac
+
+    if [ "$save_choice" = "2" ] || [ "$save_choice" = "3" ]; then
+        # Detect shell
+        SHELL_PROFILE=""
+        if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "/bin/zsh" ]; then
+            SHELL_PROFILE="$HOME/.zshrc"
+        elif [ -n "$BASH_VERSION" ] || [ "$SHELL" = "/bin/bash" ]; then
+            SHELL_PROFILE="$HOME/.bashrc"
+        else
+            # Fallback: check which files exist
+            if [ -f "$HOME/.zshrc" ]; then
+                SHELL_PROFILE="$HOME/.zshrc"
+            elif [ -f "$HOME/.bashrc" ]; then
+                SHELL_PROFILE="$HOME/.bashrc"
+            fi
+        fi
+
+        if [ -n "$SHELL_PROFILE" ]; then
+            echo ""
+            echo "Adding to $SHELL_PROFILE..."
+
+            SHELL_EXPORTS="
+# Claude Code Safe Parallel Configuration (added by claude-config-template setup)
+export SAFE_PARALLEL=true
+export CONCURRENCY_LIMIT=2
+export MEMORY_THRESHOLD=4096
+export CLAUDE_MEMORY_LIMIT_MB=6144
+export NODE_OPTIONS=\"--expose-gc --max-old-space-size=8192\"
+"
+            # Check if already added
+            if ! grep -q "Claude Code Safe Parallel Configuration" "$SHELL_PROFILE" 2>/dev/null; then
+                echo "$SHELL_EXPORTS" >> "$SHELL_PROFILE"
+                echo -e "${GREEN}✓ Added configuration to $SHELL_PROFILE${NC}"
+                echo -e "${YELLOW}⚠  Run 'source $SHELL_PROFILE' or restart terminal to apply${NC}"
+            else
+                echo -e "${BLUE}ℹ  Configuration already exists in $SHELL_PROFILE${NC}"
+            fi
+        else
+            echo -e "${YELLOW}⚠  Could not detect shell profile${NC}"
+            echo "Add these exports manually to your shell profile:"
+            echo "$SHELL_EXPORTS"
+        fi
+    fi
+
+elif [ "$env_choice" = "1" ]; then
+    echo -e "${BLUE}ℹ  Using sequential mode (default)${NC}"
+    echo "This is the safest option. No configuration needed."
+    echo ""
+    echo "To enable safe parallel later:"
+    echo "  1) Add to .env: SAFE_PARALLEL=true"
+    echo "  2) Or export: export SAFE_PARALLEL=true"
+else
+    echo "Skipped environment setup"
+fi
+
+# Step 11: Final instructions
 echo ""
 printf "["
 printf "%50s" | tr ' ' '█'
