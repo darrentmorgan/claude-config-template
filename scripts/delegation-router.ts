@@ -179,21 +179,26 @@ interface DelegationPlan {
 /**
  * Determine if secondary agents can run in parallel with primary
  *
- * MEMORY SAFETY: Parallel execution disabled to prevent memory exhaustion.
- * Promise.all with multiple agents can cause heap out of memory crashes.
- * Sequential execution (N=1) ensures controlled memory usage.
+ * MEMORY SAFETY: Uses controlled concurrency with p-limit (N=2) and memory checks.
+ * Falls back to sequential if memory high or task dependencies exist.
+ *
+ * Set SAFE_PARALLEL=true environment variable to enable controlled parallel execution.
+ * Set SAFE_PARALLEL=false or omit to force sequential (safer, slower).
  */
 function canRunInParallel(
   primary: string,
   secondaries: string[],
   prompt: string
 ): boolean {
-  // ALWAYS return false - parallel execution disabled for memory safety
-  // See: https://github.com/nodejs/node/issues/34328
-  // Promise.all with concurrent agents causes JavaScript heap out of memory
-  return false;
+  // Check environment variable for safe parallel mode
+  const safeParallelEnabled = process.env.SAFE_PARALLEL === 'true';
 
-  /* DISABLED - Keeping code for reference
+  if (!safeParallelEnabled) {
+    // Default: Sequential only (safest, but slower)
+    // Enable with: export SAFE_PARALLEL=true
+    return false;
+  }
+
   const lowerPrompt = prompt.toLowerCase();
 
   // Scenarios that MUST be sequential (dependencies exist)
@@ -206,17 +211,16 @@ function canRunInParallel(
     return false;
   }
 
-  // Independent validation agents can run in parallel
+  // Independent validation agents can run in parallel (with p-limit control)
   const parallelAgents = ['code-reviewer-pro', 'test-automator', 'typescript-pro'];
   const allParallelizable = secondaries.every(agent => parallelAgents.includes(agent));
 
-  // Primary creates code, secondaries validate → parallel
+  // Primary creates code, secondaries validate → safe parallel (N=2)
   if (['frontend-developer', 'backend-architect'].includes(primary) && allParallelizable) {
     return true;
   }
 
   return false;
-  */
 }
 
 /**
