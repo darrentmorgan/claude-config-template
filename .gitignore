@@ -22,6 +22,7 @@ logs/
 .claude/.*.log
 .claude/.*.json
 .claude/logs/
+.claude/artifacts/
 
 # Ignore .claude directory in template (created by setup.sh testing)
 .claude/
