@@ -10,7 +10,15 @@
       ],
       "env": {
         "FIRECRAWL_API_KEY": "fc-bf3ed61e05874ba2a46837a95ee2d72e"
-      }
+      ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
     },
     "Context7": {
       "command": "node",
@@ -19,8 +27,24 @@
       ],
       "env": {
         "CONTEXT7_API_KEY": "ctx7sk-b9008b41-aaa6-4353-9cd6-9835bae3ba0a"
-      }
-    }
+      ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
+    ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
   },
   "capabilities": [
     "Web scraping and content extraction",
@@ -59,4 +83,12 @@
     "Use Context7 when documentation-expert unavailable",
     "Return concise summaries, not raw scraped data"
   ]
+,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
 }

@@ -12,8 +12,24 @@
         "CLICKUP_API_KEY": "pk_282797850_TWEYBB2P5BY0FRJRR4LP1TURF96YF1BP",
         "CLICKUP_TEAM_ID": "90161066625",
         "DOCUMENT_SUPPORT": "true"
-      }
-    }
+      ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
+    ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
   },
   "capabilities": [
     "Task creation and management",
@@ -52,4 +68,12 @@
     "Return task IDs and URLs for reference",
     "Summarize sprint plans, don't dump all details"
   ]
+,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
 }

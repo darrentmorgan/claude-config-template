@@ -54,5 +54,12 @@
     "Use RPC functions for complex queries",
     "Follow existing naming conventions (snake_case)",
     "Test migrations on dev branch before production"
-  ]
+  ],
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed implementation notes to your scratchpad using artifact-write.ts. Return only 2-3 sentence summaries to the orchestrator. Include: task status, files modified, key decisions."
+  }
 }

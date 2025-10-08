@@ -70,7 +70,7 @@ If deployment fails:
 
 ## Environment Requirements
 
-- Node.js 18.15.0+
+- Node.js 20.0.0+ (LTS)
 - pnpm 9+
 - Supabase credentials in `.env`
 - Playwright browsers installed

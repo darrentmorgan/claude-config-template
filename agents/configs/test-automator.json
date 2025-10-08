@@ -15,7 +15,15 @@
         "-y",
         "@playwright/mcp@latest"
       ]
-    }
+    ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
   },
   "capabilities": [
     "Test code generation",
@@ -53,4 +61,12 @@
     "Follow existing test patterns in tests/ directory",
     "Return test file locations, not full code blocks"
   ]
+,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
 }

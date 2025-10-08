@@ -11,8 +11,24 @@
       ],
       "env": {
         "SUPABASE_ACCESS_TOKEN": "sbp_eb3b3872ce96f34792d05bb3359a243ebd44f0e0"
-      }
-    }
+      ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
+    ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
   },
   "capabilities": [
     "Query optimization",
@@ -50,4 +66,12 @@
     "Consider RLS policy impact on performance",
     "Test optimizations on realistic data volumes"
   ]
+,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
 }

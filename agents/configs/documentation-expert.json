@@ -9,8 +9,24 @@
       ],
       "env": {
         "CONTEXT7_API_KEY": "ctx7sk-b9008b41-aaa6-4353-9cd6-9835bae3ba0a"
-      }
-    }
+      ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
+    ,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
+}
   },
   "capabilities": [
     "Library documentation lookup",
@@ -32,4 +48,12 @@
     "package docs",
     "framework guide"
   ]
+,
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write detailed work to scratchpad. Return only 2-3 sentence summaries to orchestrator."
+  }
 }

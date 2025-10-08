@@ -55,5 +55,12 @@
     "Capture screenshots only for failures or when explicitly requested",
     "Return summary of issues, not full logs",
     "Include file:line references for test failures"
-  ]
+  ],
+  "artifacts": {
+    "enabled": true,
+    "scratchpad": true,
+    "auto_summary": true,
+    "detail_threshold": 200,
+    "instructions": "Write test execution details to scratchpad (full logs, traces, screenshots). Return only pass/fail summary with critical issues to orchestrator."
+  }
 }

@@ -1,15 +1,22 @@
 {
   "name": "claude-config-template",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Production-ready Claude Code configuration with autonomous workflows",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0 <21.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "test": "echo \"Run tests in your project after installation\" && exit 0",
     "setup": "bash setup.sh"
   },
   "devDependencies": {
+    "@types/node": "^20.17.6",
+    "commander": "^12.1.0",
     "minimatch": "^10.0.3",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "typescript": "^5.7.3"
   },
   "keywords": [
     "claude",
