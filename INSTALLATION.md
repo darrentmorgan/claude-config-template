@@ -1,40 +1,25 @@
 # Installation Guide
 
-## ✨ One-Command Install (Recommended)
+## ✨ One-Command Install
 
 ### Fresh Install
-
-**Method 1: Wrapper Script (Best Visual Feedback)**
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/darrentmorgan/claude-config-template/main/install.sh)
-```
-
-This provides the best installation experience with:
-- 🔄 Animated spinner during GitHub download
-- 📊 Progress bars for file operations
-- ✅ Clear step-by-step status updates
-- 🧹 Automatic cleanup
-
-**Method 2: Direct Install (Alternative)**
 
 ```bash
 npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
 ```
 
-Both methods will:
-- ✅ Download latest template
-- ✅ Run interactive setup with real-time progress indicators
-- ✅ Copy all files to `.claude/` directory (with progress bars)
+This will:
+- ✅ Download latest template from GitHub
+- ✅ Run interactive setup with real-time progress bars
+- ✅ Copy all files to `.claude/` directory
 - ✅ Install all agent configs with MCP server assignments
 - ✅ Set up hooks and scripts
 - ✅ Clean up temporary files
 
-**Visual Feedback**: The installer shows:
-- 🔄 Download progress spinner
-- 📊 Progress bars for file copying operations
-- ⏳ Real-time status updates
-- 📁 Which files/directories are being processed
+**Visual Feedback During Setup**:
+- 📊 Progress bars for file copying operations (50-character bars with %)
+- 📁 Real-time display of which files/directories are being processed
+- ✅ Completion confirmation at 100%
 
 ### Update Existing Installation
 
