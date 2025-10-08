@@ -108,6 +108,46 @@
         "auto_approve": true,
         "focus": "accuracy and clarity"
       }
+    },
+    {
+      "name": "Stripe Payment Files",
+      "pattern": "**/stripe/**/*.{ts,tsx}",
+      "exclude": ["**/*.test.ts", "**/*.spec.ts"],
+      "primary_agent": "stripe-expert",
+      "secondary_agents": ["code-reviewer-pro", "typescript-pro"],
+      "priority": "high",
+      "triggers": ["Edit", "Write"],
+      "context": {
+        "security": "critical - PCI compliance required",
+        "concerns": ["webhook signature validation", "idempotency", "no PII logging"]
+      },
+      "rationale": "Stripe-specific code requires payment expertise and security compliance"
+    },
+    {
+      "name": "Vercel Configuration",
+      "pattern": "vercel.json",
+      "primary_agent": "vercel-expert",
+      "secondary_agents": ["code-reviewer-pro"],
+      "priority": "medium",
+      "triggers": ["Edit", "Write"],
+      "context": {
+        "impact": "affects deployment and routing",
+        "concerns": ["environment variables", "build settings", "edge functions"]
+      },
+      "rationale": "Vercel configuration requires deployment knowledge"
+    },
+    {
+      "name": "Stripe Webhooks",
+      "pattern": "**/api/webhooks/stripe/**/*.{ts,tsx}",
+      "primary_agent": "stripe-expert",
+      "secondary_agents": ["backend-architect", "code-reviewer-pro"],
+      "priority": "high",
+      "triggers": ["Edit", "Write"],
+      "context": {
+        "security": "critical - signature verification required",
+        "concerns": ["webhook validation", "idempotency", "event handling"]
+      },
+      "rationale": "Stripe webhooks require payment and security expertise"
     }
   ],
   "agent_capabilities": {
@@ -206,6 +246,45 @@
       "strengths": ["TDD workflow", "agent orchestration", "incremental delivery"],
       "use_for": ["plan execution", "autonomous implementation", "multi-phase builds"],
       "mcp_servers": []
+    },
+    "vercel-expert": {
+      "description": "Vercel deployment and infrastructure specialist",
+      "strengths": ["deployment management", "environment configuration", "edge functions"],
+      "use_for": ["Vercel deployments", "preview/production deploys", "build optimization"],
+      "mcp_servers": [],
+      "triggers": [
+        "vercel",
+        "deploy",
+        "edge function",
+        "vercel.json",
+        "preview deployment",
+        "production deploy"
+      ],
+      "file_patterns": [
+        "vercel.json",
+        ".vercelignore",
+        "api/**/*.ts"
+      ]
+    },
+    "stripe-expert": {
+      "description": "Stripe payment integration specialist",
+      "strengths": ["payment processing", "subscription management", "webhook handling"],
+      "use_for": ["Stripe payments", "checkout flows", "billing integration"],
+      "mcp_servers": ["stripe"],
+      "triggers": [
+        "stripe",
+        "payment",
+        "subscription",
+        "checkout",
+        "payment intent",
+        "webhook",
+        "refund"
+      ],
+      "file_patterns": [
+        "**/stripe/**/*.ts",
+        "**/payments/**/*.ts",
+        "**/checkout/**/*.tsx"
+      ]
     }
   },
   "execution_strategy": {
@@ -391,6 +470,49 @@
           "Plan sprint backlog",
           "Track feature implementation progress"
         ]
+      },
+      {
+        "name": "Stripe Payment Integration",
+        "mcp_server": "stripe",
+        "primary_agent": "stripe-expert",
+        "keywords": [
+          "stripe",
+          "payment",
+          "subscription",
+          "checkout",
+          "payment intent",
+          "stripe webhook",
+          "refund",
+          "customer billing"
+        ],
+        "example_queries": [
+          "Create Stripe subscription checkout",
+          "Configure payment webhooks",
+          "Process refund for order",
+          "Create product and pricing"
+        ],
+        "special_instructions": "NEVER log API keys, verify webhook signatures, follow PCI compliance"
+      },
+      {
+        "name": "Vercel Deployment",
+        "mcp_server": "none (uses CLI)",
+        "primary_agent": "vercel-expert",
+        "keywords": [
+          "vercel",
+          "deploy",
+          "edge function",
+          "vercel.json",
+          "preview deployment",
+          "production deploy",
+          "vercel environment"
+        ],
+        "example_queries": [
+          "Deploy to Vercel production",
+          "Create preview deployment",
+          "Configure Vercel environment variables",
+          "Setup edge functions"
+        ],
+        "special_instructions": "Confirm production deployments, use --yes for CI/CD, document URLs"
       }
     ],
     "delegation_workflow": {

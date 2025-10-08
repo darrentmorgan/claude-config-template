@@ -131,6 +131,29 @@
         "assign task"
       ],
       "routing_logic": "Use task-coordinator (Haiku) for CRUD operations, product-manager (Sonnet) for strategy"
+    },
+    "stripe": {
+      "description": "Stripe payment processing and subscriptions",
+      "agents": ["stripe-expert"],
+      "primary": "stripe-expert",
+      "use_cases": [
+        "Payment intent creation",
+        "Subscription management",
+        "Webhook configuration",
+        "Customer billing",
+        "Refund processing",
+        "Product and price setup",
+        "Checkout integration"
+      ],
+      "routing_triggers": [
+        "stripe",
+        "payment",
+        "subscription",
+        "checkout",
+        "stripe webhook",
+        "refund",
+        "payment intent"
+      ]
     }
   },
   "delegation_rules": {
@@ -231,6 +254,18 @@
       "context_budget": "Low (CRUD operations)",
       "response_format": "Task IDs + operation summary",
       "use_for": "ClickUp task CRUD, simple coordination (NOT strategy)"
+    },
+    "stripe-expert": {
+      "mcp_servers": ["stripe"],
+      "config_file": ".claude/agents/configs/stripe-expert.json",
+      "context_budget": "Moderate",
+      "response_format": "Payment summary + object IDs"
+    },
+    "vercel-expert": {
+      "mcp_servers": [],
+      "config_file": ".claude/agents/configs/vercel-expert.json",
+      "context_budget": "Low (CLI output)",
+      "response_format": "Deployment URL + status"
     }
   },
   "example_delegations": [
