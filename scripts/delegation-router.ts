@@ -178,12 +178,22 @@ interface DelegationPlan {
 
 /**
  * Determine if secondary agents can run in parallel with primary
+ *
+ * MEMORY SAFETY: Parallel execution disabled to prevent memory exhaustion.
+ * Promise.all with multiple agents can cause heap out of memory crashes.
+ * Sequential execution (N=1) ensures controlled memory usage.
  */
 function canRunInParallel(
   primary: string,
   secondaries: string[],
   prompt: string
 ): boolean {
+  // ALWAYS return false - parallel execution disabled for memory safety
+  // See: https://github.com/nodejs/node/issues/34328
+  // Promise.all with concurrent agents causes JavaScript heap out of memory
+  return false;
+
+  /* DISABLED - Keeping code for reference
   const lowerPrompt = prompt.toLowerCase();
 
   // Scenarios that MUST be sequential (dependencies exist)
@@ -206,6 +216,7 @@ function canRunInParallel(
   }
 
   return false;
+  */
 }
 
 /**

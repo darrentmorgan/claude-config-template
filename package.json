@@ -1,7 +1,7 @@
 {
   "name": "claude-config-template",
-  "version": "2.1.0",
-  "description": "Production-ready Claude Code configuration with autonomous workflows",
+  "version": "2.2.0",
+  "description": "Production-ready Claude Code configuration with sequential execution for memory safety",
   "type": "module",
   "engines": {
     "node": ">=20.0.0 <21.0.0",
