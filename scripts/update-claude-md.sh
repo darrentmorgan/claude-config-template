@@ -13,10 +13,13 @@ NC='\033[0m'
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CLAUDE_MD_PATH="$HOME/.claude/CLAUDE.md"
-AGENT_SECTION_PATH="$SCRIPT_DIR/../docs/CLAUDE_MD_AGENT_SECTION.md"
+CONDENSED_TEMPLATE="$SCRIPT_DIR/../docs/CLAUDE_MD_CONDENSED.md"
 
-echo -e "${BLUE}🤖 Claude.md Agent Reference Updater${NC}"
-echo "===================================="
+echo -e "${BLUE}🤖 Claude.md Updater (Condensed Version)${NC}"
+echo "=========================================="
+echo ""
+echo "This will install a condensed CLAUDE.md that references"
+echo "detailed documentation in .claude/docs/ files."
 echo ""
 
 # Check if CLAUDE.md exists
@@ -35,46 +38,52 @@ if [ ! -f "$CLAUDE_MD_PATH" ]; then
     fi
 fi
 
-# Check if agent section already exists
-if grep -q "## Available Specialized Agents" "$CLAUDE_MD_PATH"; then
-    echo -e "${YELLOW}⚠️  Agent section already exists in CLAUDE.md${NC}"
+# Check if CLAUDE.md has content
+if [ -s "$CLAUDE_MD_PATH" ]; then
+    echo -e "${YELLOW}⚠️  CLAUDE.md already has content${NC}"
     echo ""
-    read -p "Would you like to update it? (y/n): " update_section
+    echo "Current file size: $(wc -l < "$CLAUDE_MD_PATH") lines"
+    echo ""
+    read -p "Replace with condensed version? (y/n): " replace_file
 
-    if [ "$update_section" = "y" ]; then
-        # Remove existing agent section (from "## Available Specialized Agents" to the next top-level heading or EOF)
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            # macOS
-            sed -i '' '/## Available Specialized Agents/,/^# [^#]/d' "$CLAUDE_MD_PATH"
-        else
-            # Linux
-            sed -i '/## Available Specialized Agents/,/^# [^#]/d' "$CLAUDE_MD_PATH"
-        fi
-        echo -e "${GREEN}✓ Removed old agent section${NC}"
+    if [ "$replace_file" = "y" ]; then
+        # Backup existing file
+        BACKUP_PATH="$CLAUDE_MD_PATH.backup-$(date +%Y%m%d-%H%M%S)"
+        cp "$CLAUDE_MD_PATH" "$BACKUP_PATH"
+        echo -e "${GREEN}✓ Backed up to: $BACKUP_PATH${NC}"
     else
         echo "Aborting. No changes made."
         exit 0
     fi
 fi
 
-# Extract the actual content (skip the header instructions)
+# Install condensed template
 echo ""
-echo -e "${YELLOW}Adding agent reference section...${NC}"
+echo -e "${YELLOW}Installing condensed CLAUDE.md template...${NC}"
 
-# Read the agent section file and skip the first 5 lines (header)
-AGENT_CONTENT=$(tail -n +6 "$AGENT_SECTION_PATH")
+cat "$CONDENSED_TEMPLATE" > "$CLAUDE_MD_PATH"
 
-# Append to CLAUDE.md
-echo "" >> "$CLAUDE_MD_PATH"
-echo "---" >> "$CLAUDE_MD_PATH"
-echo "" >> "$CLAUDE_MD_PATH"
-echo "$AGENT_CONTENT" >> "$CLAUDE_MD_PATH"
-
-echo -e "${GREEN}✓ Agent reference section added to CLAUDE.md${NC}"
+echo -e "${GREEN}✓ Condensed CLAUDE.md installed${NC}"
+echo ""
+echo "📊 File size comparison:"
+if [ -f "$BACKUP_PATH" ]; then
+    OLD_LINES=$(wc -l < "$BACKUP_PATH")
+    NEW_LINES=$(wc -l < "$CLAUDE_MD_PATH")
+    REDUCTION=$((100 - (NEW_LINES * 100 / OLD_LINES)))
+    echo "  Old: $OLD_LINES lines"
+    echo "  New: $NEW_LINES lines"
+    echo "  Reduction: $REDUCTION%"
+fi
 echo ""
 echo -e "${BLUE}Next steps:${NC}"
-echo "1. Review your updated CLAUDE.md: $CLAUDE_MD_PATH"
-echo "2. Customize agent routing rules if needed"
-echo "3. Run setup.sh in your projects to install agent configs"
+echo "1. Review your condensed CLAUDE.md: $CLAUDE_MD_PATH"
+echo "2. Run setup.sh in your projects to install .claude/docs/"
+echo "3. Detailed docs will be available in .claude/docs/:"
+echo "   - DELEGATION.md - Full delegation protocol"
+echo "   - AGENT_REFERENCE.md - All agent capabilities"
+echo "   - WORKFLOWS.md - Scout→Plan→Build workflows"
+echo "   - TESTING_GUIDE.md - Test strategies"
+echo ""
+echo -e "${GREEN}✅ CLAUDE.md is now 80%+ smaller and references detailed docs!${NC}"
 echo ""
 echo -e "${GREEN}Done! 🚀${NC}"
