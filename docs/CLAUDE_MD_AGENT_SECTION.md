@@ -88,6 +88,29 @@ The following specialized agents are available for delegation. Each agent has sp
 
 ---
 
+### Workflow Orchestration (Advanced)
+
+- **`scout-agent`** - Minimal context identification and dependency analysis
+  - MCP: None
+  - Triggers: `scout`, `identify files`, `find relevant code`, `analyze dependencies`
+  - Use: Phase 1 of Scout → Plan → Build workflow
+
+- **`planner-agent`** - TDD implementation planning and task breakdown
+  - MCP: None (delegates to documentation-expert if needed)
+  - Triggers: `plan`, `create plan`, `design implementation`, `TDD plan`
+  - Use: Phase 2 of Scout → Plan → Build workflow
+
+- **`build-executor`** - TDD execution via agent delegation and incremental commits
+  - MCP: None (delegates to all specialists)
+  - Triggers: `build`, `implement plan`, `execute`, `build from plan`
+  - Use: Phase 3 of Scout → Plan → Build workflow
+
+**Workflow Commands**: `/scout`, `/plan`, `/build`, `/auto-implement`
+
+**See**: [WORKFLOWS.md](../.claude/docs/WORKFLOWS.md) for complete workflow documentation
+
+---
+
 ### Agent Routing Rules
 
 #### Automatic Delegation (Keyword Matching)

@@ -9,13 +9,14 @@ A reusable, production-ready configuration system for Claude Code that brings au
 
 ## 🚀 Features
 
-- ✅ **Specialized Agent System** - Pattern-based delegation to 15+ expert agents
+- ✅ **Specialized Agent System** - Pattern-based delegation to 16+ expert agents
+- ✅ **Scout → Plan → Build Workflows** - Autonomous multi-phase implementation with TDD enforcement
 - ✅ **Automated Quality Gates** - Pre-commit hooks with linting, type-checking, and AI review
-- ✅ **MCP Context Optimization** - 74% context reduction (~92k tokens saved)
+- ✅ **MCP Context Optimization** - 74-90% context reduction (~92k+ tokens saved)
 - ✅ **CLAUDE.md Integration** - Global agent reference for automatic delegation across all projects
 - ✅ **Framework Agnostic** - Auto-detects and configures for React/Vue/Express/Next.js
 - ✅ **Global Agent Sharing** - Consistent behavior across all projects
-- ✅ **Custom Slash Commands** - `/generate-api`, `/create-component`, `/deploy`, etc.
+- ✅ **Custom Slash Commands** - `/auto-implement`, `/generate-api`, `/create-component`, `/deploy`, etc.
 
 ## 📦 What's Included
 
@@ -34,12 +35,20 @@ claude-config-template/
 │   ├── create-component.md   # Scaffold React components
 │   ├── generate-api.md       # Generate Express endpoints
 │   ├── deploy.md             # Autonomous deployment
-│   └── run-qa.md             # E2E testing workflow
+│   ├── run-qa.md             # E2E testing workflow
+│   └── workflows/            # Advanced multi-phase workflows
+│       ├── scout.md          # Phase 1: Context identification
+│       ├── plan.md           # Phase 2: TDD planning
+│       ├── build.md          # Phase 3: Implementation
+│       └── auto-implement.md # Full autonomous workflow
 ├── docs/                      # Documentation
 │   ├── AGENT_REFERENCE.md     # Complete agent documentation
+│   ├── WORKFLOWS.md           # Scout → Plan → Build guide
 │   ├── CLAUDE_MD_INTEGRATION.md # Global CLAUDE.md setup guide
 │   ├── CLAUDE_MD_AGENT_SECTION.md # Template for CLAUDE.md
-│   └── MCP_DELEGATION_GUIDE.md
+│   ├── MCP_DELEGATION_GUIDE.md
+│   └── artifacts/            # Example workflow artifacts
+│       └── README.md         # Artifacts documentation
 ├── scripts/                   # Helper scripts
 │   └── update-claude-md.sh    # Update global CLAUDE.md with agents
 ├── setup.sh                   # Interactive installation script
@@ -156,14 +165,23 @@ Configure `.claude/settings.local.json`:
 
 ### Slash Commands
 
-After installation, use these commands:
-
+#### Single-Phase Commands (Fast, Focused)
 ```bash
 /generate-api createProject POST    # Generate Express endpoint
 /create-component Button            # Scaffold React component
 /deploy                             # Autonomous deployment workflow
 /run-qa                             # E2E testing with AI review
 ```
+
+#### Multi-Phase Workflows (Advanced, Autonomous)
+```bash
+/auto-implement "Add dark mode toggle to Settings"    # Full Scout → Plan → Build
+/scout "User profile management"                     # Phase 1: Context identification
+/plan                                                 # Phase 2: TDD planning
+/build                                                # Phase 3: Implementation
+```
+
+**See**: [WORKFLOWS.md](docs/WORKFLOWS.md) for complete workflow guide
 
 ### Quality Gates
 
@@ -290,6 +308,7 @@ All linked projects get updates immediately.
 
 ## 📚 Documentation
 
+- **Workflows Guide**: `.claude/docs/WORKFLOWS.md` - Scout → Plan → Build autonomous workflows
 - **Agent Reference**: `.claude/docs/AGENT_REFERENCE.md` - Complete agent documentation
 - **CLAUDE.md Integration**: `.claude/docs/CLAUDE_MD_INTEGRATION.md` - Global configuration guide
 - **Agent System**: `.claude/docs/MCP_DELEGATION_GUIDE.md` - MCP delegation patterns

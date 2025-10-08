@@ -188,6 +188,24 @@
       "strengths": ["ETL", "data transformation", "pipelines"],
       "use_for": ["data migration", "batch processing", "data quality"],
       "mcp_servers": ["supabase"]
+    },
+    "scout-agent": {
+      "description": "Minimal context identification and dependency analysis",
+      "strengths": ["file scanning", "dependency mapping", "context minimization"],
+      "use_for": ["task scoping", "identifying relevant files", "pre-planning analysis"],
+      "mcp_servers": []
+    },
+    "planner-agent": {
+      "description": "TDD implementation planning and task breakdown",
+      "strengths": ["test-first design", "step-by-step planning", "risk assessment"],
+      "use_for": ["complex features", "multi-agent coordination", "autonomous workflows"],
+      "mcp_servers": []
+    },
+    "build-executor": {
+      "description": "TDD execution via agent delegation and incremental commits",
+      "strengths": ["TDD workflow", "agent orchestration", "incremental delivery"],
+      "use_for": ["plan execution", "autonomous implementation", "multi-phase builds"],
+      "mcp_servers": []
     }
   },
   "execution_strategy": {
