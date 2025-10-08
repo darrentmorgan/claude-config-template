@@ -4,9 +4,18 @@
 
 set -e
 
-echo "🚀 Claude Code Configuration Setup"
-echo "=================================="
-echo ""
+# Check for --update flag
+UPDATE_MODE=false
+if [ "$1" = "--update" ] || [ "$1" = "-u" ]; then
+    UPDATE_MODE=true
+    echo "🔄 Claude Code Configuration Update"
+    echo "==================================="
+    echo ""
+else
+    echo "🚀 Claude Code Configuration Setup"
+    echo "=================================="
+    echo ""
+fi
 
 # Colors
 RED='\033[0;31m'
@@ -104,13 +113,39 @@ echo -e "${YELLOW}Step 4: Installing .claude configuration...${NC}"
 
 # Create .claude directory if it doesn't exist
 if [ -d ".claude" ]; then
-    echo -e "${YELLOW}⚠  .claude directory already exists.${NC}"
-    read -p "Overwrite existing configuration? (y/n): " overwrite
-    if [ "$overwrite" != "y" ]; then
-        echo "Setup cancelled."
-        exit 0
+    if [ "$UPDATE_MODE" = true ]; then
+        echo -e "${BLUE}ℹ  Updating existing .claude configuration...${NC}"
+        echo "This will update:"
+        echo "  ✅ scripts/delegation-router.ts (parallel execution)"
+        echo "  ✅ hooks/pre-request-router.sh (parallel guidance)"
+        echo "  ✅ agents/delegation-map.json (routing rules)"
+        echo "  ✅ agents/configs/*.json (MCP assignments)"
+        echo "  ✅ docs/ (documentation)"
+        echo ""
+        echo "Your customizations in settings.local.json will be preserved."
+        echo ""
+        read -p "Continue with update? (y/n): " confirm_update
+        if [ "$confirm_update" != "y" ]; then
+            echo "Update cancelled."
+            exit 0
+        fi
+
+        # Backup existing config
+        echo "📦 Creating backup..."
+        cp -r .claude .claude-backup-$(date +%Y%m%d-%H%M%S)
+        echo -e "${GREEN}✓ Backup created${NC}"
+
+    else
+        echo -e "${YELLOW}⚠  .claude directory already exists.${NC}"
+        read -p "Overwrite existing configuration? (y/n): " overwrite
+        if [ "$overwrite" != "y" ]; then
+            echo "Setup cancelled."
+            echo -e "${BLUE}Tip: Use --update flag to update existing installation:${NC}"
+            echo "  bash setup.sh --update"
+            exit 0
+        fi
+        rm -rf .claude
     fi
-    rm -rf .claude
 fi
 
 mkdir -p .claude
@@ -122,7 +157,13 @@ cp -r "$SCRIPT_DIR/hooks" .claude/
 cp -r "$SCRIPT_DIR/commands" .claude/
 cp -r "$SCRIPT_DIR/docs" .claude/ 2>/dev/null || true
 cp -r "$SCRIPT_DIR/scripts" .claude/ 2>/dev/null || true
-cp "$SCRIPT_DIR/settings.local.json" .claude/
+
+# Handle settings.local.json differently for updates
+if [ "$UPDATE_MODE" = true ] && [ -f ".claude/settings.local.json" ]; then
+    echo -e "${BLUE}ℹ  Preserving existing settings.local.json${NC}"
+else
+    cp "$SCRIPT_DIR/settings.local.json" .claude/
+fi
 
 # Step 5: Replace placeholders
 echo ""

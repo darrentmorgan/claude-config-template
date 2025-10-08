@@ -5,7 +5,9 @@
 
 A reusable, production-ready configuration system for Claude Code that brings autonomous development workflows to any project.
 
-> **⚡ Quick Install**: `npx degit darrentmorgan/claude-config-template .claude-temp && .claude-temp/setup.sh && rm -rf .claude-temp`
+> **⚡ Quick Install**: `npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp`
+>
+> **🔄 Update Existing**: `npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claude-temp && bash setup.sh --update && cd .. && rm -rf .claude-temp`
 
 ---
 
@@ -76,49 +78,71 @@ claude-config-template/
 
 ### Installation
 
-**Option 1: Using degit (Recommended)**
+**One-Command Install (Recommended)**
+
 ```bash
-cd /path/to/your/project
-npx degit darrentmorgan/claude-config-template .claude-temp
-.claude-temp/setup.sh
-rm -rf .claude-temp
+# Fresh install
+npx degit darrentmorgan/claude-config-template .claude-temp && cd .claude-temp && bash setup.sh && cd .. && rm -rf .claude-temp
+
+# Update existing installation
+npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claude-temp && bash setup.sh --update && cd .. && rm -rf .claude-temp
 ```
 
-**Option 2: Using git clone**
-```bash
-cd /path/to/your/project
-git clone https://github.com/darrentmorgan/claude-config-template.git .claude-temp
-.claude-temp/setup.sh
-rm -rf .claude-temp
-```
+**What Gets Installed**
 
-**Option 3: GitHub Template (after marking as template)**
-```bash
-# On GitHub, click "Use this template" → Create new repository
-# Then clone and run:
-cd your-new-repo
-./setup.sh
-```
+- ✅ **Agent configs with MCP assignments** (`.claude/agents/configs/`)
+  - `backend-architect.json` → `supabase`
+  - `qa-expert.json` → `chrome-devtools`, `playwright`
+  - `documentation-expert.json` → `Context7`
+  - And 10 more specialized agents
+- ✅ **Parallel execution system** (`.claude/scripts/delegation-router.ts`)
+- ✅ **Smart routing hooks** (`.claude/hooks/pre-request-router.sh`)
+- ✅ **Delegation rules** (`.claude/agents/delegation-map.json`)
+- ✅ **Documentation** (`.claude/docs/`)
+- ✅ **Slash commands** (`.claude/commands/`)
 
-### What the Setup Does
+**What the Setup Does**
 
 1. **Auto-detects your project**:
    - Package manager (npm/pnpm/yarn/bun)
    - Framework (React/Next.js/Vue/Express)
    - Project name
 
-2. **Installs configuration**:
-   - Copies files to `.claude/` directory
+2. **Installs complete configuration**:
+   - Copies all files to `.claude/` directory
+   - Configures agent MCP server assignments
    - Replaces placeholders (`{{PKG_MANAGER}}`, `{{PROJECT_NAME}}`)
    - Makes hooks executable
 
-3. **Optional global sharing**:
+3. **Update mode** (with `--update` flag):
+   - Preserves your `settings.local.json`
+   - Creates timestamped backup
+   - Updates delegation router, hooks, and docs
+   - Maintains customizations
+
+4. **Optional global sharing**:
    - Links agent configs to `~/.claude/agents/shared/`
    - Ensures consistency across projects
 
-4. **Git integration**:
+5. **Git integration**:
    - Add to `.gitignore` (private config)
    - Or commit to repo (team-shared config)
+
+**Verify Installation**
+
+```bash
+# Test router
+npx tsx .claude/scripts/delegation-router.ts "Add Button component" --plan
+
+# Check agent MCP assignments
+cat .claude/agents/configs/backend-architect.json | jq '.mcp_servers'
+# Output: ["supabase"]
+
+# See all agents
+ls -la .claude/agents/configs/
+```
+
+📚 **[Full Installation Guide](INSTALLATION.md)**
 
 ## 🔧 Configuration
 
