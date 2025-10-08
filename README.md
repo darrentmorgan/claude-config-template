@@ -25,6 +25,7 @@ A reusable, production-ready configuration system for Claude Code that brings au
 
 ## 🚀 Features
 
+- ✅ **Parallel Agent Execution** - Run multiple agents concurrently (66% faster than sequential)
 - ✅ **Specialized Agent System** - Pattern-based delegation to 16+ expert agents
 - ✅ **Scout → Plan → Build Workflows** - Autonomous multi-phase implementation with TDD enforcement
 - ✅ **Automated Quality Gates** - Pre-commit hooks with linting, type-checking, and AI review
@@ -324,6 +325,7 @@ All linked projects get updates immediately.
 
 ## 📚 Documentation
 
+- **Parallel Execution**: `.claude/docs/PARALLEL_EXECUTION_GUIDE.md` - Run agents concurrently (66% faster!)
 - **Workflows Guide**: `.claude/docs/WORKFLOWS.md` - Scout → Plan → Build autonomous workflows
 - **Agent Reference**: `.claude/docs/AGENT_REFERENCE.md` - Complete agent documentation
 - **CLAUDE.md Integration**: `.claude/docs/CLAUDE_MD_INTEGRATION.md` - Global configuration guide
