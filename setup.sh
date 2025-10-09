@@ -24,6 +24,46 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Function to create version metadata
+create_version_file() {
+    local project_root="$1"
+
+    echo "Creating version metadata..."
+
+    # Fetch latest commit hash from GitHub
+    REPO="darrentmorgan/claude-config-template"
+    COMMIT_DATA=$(curl -s "https://api.github.com/repos/$REPO/commits/main" 2>/dev/null)
+
+    if [ $? -eq 0 ] && echo "$COMMIT_DATA" | grep -q "sha"; then
+        COMMIT_HASH=$(echo "$COMMIT_DATA" | grep -m1 '"sha"' | cut -d'"' -f4 | cut -c1-7)
+        COMMIT_DATE=$(echo "$COMMIT_DATA" | grep -m1 '"date"' | cut -d'"' -f4)
+    else
+        COMMIT_HASH="unknown"
+        COMMIT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    fi
+
+    # Read version from package.json if it exists
+    if [ -f "$SCRIPT_DIR/package.json" ]; then
+        VERSION=$(grep -m1 '"version"' "$SCRIPT_DIR/package.json" | cut -d'"' -f4)
+    else
+        VERSION="1.0.0"
+    fi
+
+    # Create version file
+    cat > "$project_root/.claude/.version.json" <<EOF
+{
+  "installedVersion": "$VERSION",
+  "gitCommitHash": "$COMMIT_HASH",
+  "installedDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "lastChecked": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "repository": "$REPO"
+}
+EOF
+
+    echo -e "${GREEN}✓${NC} Version file created: .claude/.version.json"
+    echo "  Installed version: $VERSION ($COMMIT_HASH)"
+}
+
 # Progress spinner
 spinner() {
     local pid=$1
@@ -218,6 +258,10 @@ if [ ! -f ".claude/.env" ] && [ -f "$SCRIPT_DIR/.env.template" ]; then
 fi
 
 printf "\r%80s\r" " "  # Clear progress line
+
+# Create version metadata
+create_version_file "$CURRENT_DIR"
+echo ""
 
 # Step 5: Replace placeholders
 echo ""

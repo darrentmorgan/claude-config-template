@@ -24,6 +24,10 @@ logs/
 .claude/logs/
 .claude/artifacts/
 
+# Version tracking (local state)
+.claude/.version.json
+.claude/.update-check-cache
+
 # Ignore .claude directory in template (created by setup.sh testing)
 # But allow template files
 .claude/
