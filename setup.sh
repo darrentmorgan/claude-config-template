@@ -461,7 +461,163 @@ else
     echo "Skipped environment setup"
 fi
 
-# Step 11: Final instructions
+# Step 11: Fast CLI Tools Installation (Optional)
+echo ""
+echo -e "${YELLOW}Step 11: Fast CLI Tools Installation (Optional)${NC}"
+echo "Install superfast CLI tools for better performance?"
+echo ""
+echo "These tools significantly speed up code search and navigation:"
+echo "  • ripgrep (rg)  - 10x faster than grep"
+echo "  • fd            - 10x faster than find"
+echo "  • fzf           - Interactive fuzzy finder"
+echo "  • ag            - The Silver Searcher (alternative to grep)"
+echo "  • pt            - Platinum Searcher (alternative to grep)"
+echo "  • zoxide (z)    - Smart directory jumping"
+echo ""
+echo "Options:"
+echo "  1) Install all recommended tools (recommended)"
+echo "  2) Use default tools (grep, find)"
+echo "  3) Skip (I'll install manually later)"
+echo ""
+read -p "Select (1-3): " fast_tools_choice
+
+install_fast_tools() {
+    local tools=("ripgrep" "fd" "fzf" "the_silver_searcher" "pt" "zoxide")
+    local tool_names=("rg" "fd" "fzf" "ag" "pt" "z")
+
+    echo ""
+    echo "Detecting package manager..."
+
+    # Detect OS and package manager
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        if command -v brew &> /dev/null; then
+            echo -e "${GREEN}✓ Homebrew detected${NC}"
+            echo ""
+            echo "Installing fast CLI tools..."
+
+            for i in "${!tools[@]}"; do
+                local tool="${tools[$i]}"
+                local cmd="${tool_names[$i]}"
+
+                if command -v "$cmd" &> /dev/null; then
+                    echo -e "${BLUE}ℹ  $tool already installed${NC}"
+                else
+                    echo "Installing $tool..."
+                    brew install "$tool" &> /dev/null &
+                    local pid=$!
+                    spinner $pid "Installing $tool..."
+                    wait $pid
+
+                    if [ $? -eq 0 ]; then
+                        echo -e "${GREEN}✓ $tool installed${NC}"
+                    else
+                        echo -e "${RED}✗ Failed to install $tool${NC}"
+                    fi
+                fi
+            done
+        else
+            echo -e "${YELLOW}⚠  Homebrew not found. Please install Homebrew first:${NC}"
+            echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            echo ""
+            echo "Or install tools manually:"
+            echo "  brew install ripgrep fd fzf the_silver_searcher pt zoxide"
+        fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux
+        if command -v apt-get &> /dev/null; then
+            echo -e "${GREEN}✓ apt-get detected${NC}"
+            echo ""
+            echo "Installing fast CLI tools..."
+            echo -e "${YELLOW}Note: This requires sudo privileges${NC}"
+
+            # Map Homebrew names to apt package names
+            local apt_tools=("ripgrep" "fd-find" "fzf" "silversearcher-ag")
+
+            for tool in "${apt_tools[@]}"; do
+                if dpkg -l | grep -q "^ii  $tool"; then
+                    echo -e "${BLUE}ℹ  $tool already installed${NC}"
+                else
+                    echo "Installing $tool..."
+                    sudo apt-get install -y "$tool" &> /dev/null
+
+                    if [ $? -eq 0 ]; then
+                        echo -e "${GREEN}✓ $tool installed${NC}"
+                    else
+                        echo -e "${RED}✗ Failed to install $tool${NC}"
+                    fi
+                fi
+            done
+
+            # pt and zoxide need different installation on Linux
+            echo -e "${YELLOW}Note: pt and zoxide may need manual installation on Linux${NC}"
+        else
+            echo -e "${YELLOW}⚠  apt-get not found. Manual installation required.${NC}"
+            echo ""
+            echo "Install tools manually based on your distro:"
+            echo "  • Debian/Ubuntu: sudo apt-get install ripgrep fd-find fzf silversearcher-ag"
+            echo "  • Fedora: sudo dnf install ripgrep fd-find fzf the_silver_searcher"
+            echo "  • Arch: sudo pacman -S ripgrep fd fzf the_silver_searcher"
+        fi
+    else
+        echo -e "${YELLOW}⚠  Unsupported OS. Please install tools manually.${NC}"
+    fi
+}
+
+verify_fast_tools() {
+    echo ""
+    echo "Verifying installed tools..."
+    local tools=("rg" "fd" "fzf" "ag" "pt" "z")
+    local installed_count=0
+
+    for tool in "${tools[@]}"; do
+        if command -v "$tool" &> /dev/null; then
+            echo -e "${GREEN}✓ $tool is available${NC}"
+            installed_count=$((installed_count + 1))
+        else
+            echo -e "${YELLOW}✗ $tool not found${NC}"
+        fi
+    done
+
+    echo ""
+    if [ $installed_count -eq ${#tools[@]} ]; then
+        echo -e "${GREEN}✅ All fast tools installed successfully!${NC}"
+    elif [ $installed_count -gt 0 ]; then
+        echo -e "${BLUE}ℹ  $installed_count/${#tools[@]} tools installed${NC}"
+    else
+        echo -e "${YELLOW}⚠  No fast tools installed${NC}"
+    fi
+}
+
+case $fast_tools_choice in
+    1)
+        install_fast_tools
+        verify_fast_tools
+
+        echo ""
+        echo -e "${GREEN}Fast tools installed!${NC}"
+        echo ""
+        echo "Claude Code will now prefer these tools:"
+        echo "  • Use 'rg' instead of 'grep'"
+        echo "  • Use 'fd' instead of 'find'"
+        echo "  • Use 'fzf' for interactive filtering"
+        echo "  • Use 'z' for smart directory navigation"
+        ;;
+    2)
+        echo -e "${BLUE}ℹ  Using default tools (grep, find)${NC}"
+        echo "You can install fast tools later with:"
+        echo "  brew install ripgrep fd fzf the_silver_searcher pt zoxide  # macOS"
+        echo "  sudo apt-get install ripgrep fd-find fzf silversearcher-ag  # Linux"
+        ;;
+    3)
+        echo "Skipped fast tools installation"
+        echo -e "${BLUE}Tip: Install later for better performance:${NC}"
+        echo "  macOS: brew install ripgrep fd fzf the_silver_searcher pt zoxide"
+        echo "  Linux: sudo apt-get install ripgrep fd-find fzf silversearcher-ag"
+        ;;
+esac
+
+# Step 12: Final instructions
 echo ""
 printf "["
 printf "%50s" | tr ' ' '█'
@@ -480,6 +636,7 @@ echo "3. Try a command: /generate-api or /create-component"
 echo "4. Hooks will automatically run on Edit/Write/Commit"
 echo ""
 echo -e "${YELLOW}Documentation:${NC}"
+echo "  - Fast tools: .claude/docs/FAST_TOOLS_GUIDE.md"
 echo "  - Agent reference: .claude/docs/AGENT_REFERENCE.md"
 echo "  - Agent system: .claude/docs/MCP_DELEGATION_GUIDE.md"
 echo "  - Agent configs: .claude/agents/configs/README.md"

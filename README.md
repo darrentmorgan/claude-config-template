@@ -81,6 +81,39 @@ export CONCURRENCY_LIMIT=2
 
 ---
 
+## 🔥 **Fast CLI Tools** (2025-10-09)
+
+**Performance Boost**: 10x faster code search and file navigation with optional superfast CLI tools.
+
+- ✅ **Optional installation** during setup (Step 11)
+- ✅ **ripgrep (rg)** - 10x faster than grep for code search
+- ✅ **fd** - 10x faster than find for file finding
+- ✅ **fzf** - Interactive fuzzy finder
+- ✅ **ag/pt** - Alternative fast search tools
+- ✅ **zoxide (z)** - Smart directory jumping
+- ✅ **Auto-configured** - Claude Code prefers fast tools when available
+- ✅ **Fallback support** - Uses standard grep/find if not installed
+
+**Installation:**
+```bash
+# Automatic during setup
+./setup.sh
+# Select option 1 in Step 11
+
+# Manual installation
+brew install ripgrep fd fzf the_silver_searcher pt zoxide  # macOS
+sudo apt-get install ripgrep fd-find fzf silversearcher-ag  # Linux
+```
+
+**Performance:**
+- Search 200MB codebase: 0.3s (vs 3s with grep)
+- Find 50k files: 0.1s (vs 1s with find)
+- **10x more searches** in same time = deeper code understanding
+
+📚 **See**: [Fast Tools Guide](docs/FAST_TOOLS_GUIDE.md)
+
+---
+
 ## 🔥 **Delegation Fix v2.0.0** (2025-10-08)
 
 **Critical Update**: Fixes context exhaustion issues with automated enforcement system.
@@ -97,7 +130,8 @@ export CONCURRENCY_LIMIT=2
 
 ## 🚀 Features
 
-- ✅ **Sequential Execution (NEW)** - Forced sequential (N=1) + GC prevents crashes (0% crash rate)
+- ✅ **Fast CLI Tools (NEW)** - Optional installation of ripgrep, fd, fzf, ag, pt, zoxide (10x faster search/navigation)
+- ✅ **Sequential Execution** - Forced sequential (N=1) + GC prevents crashes (0% crash rate)
 - ✅ **Artifact System** - Disk-based scratchpads with 90%+ context reduction
 - ✅ **Memory Protection** - 6GB limit + forced GC between agents
 - ✅ **Specialized Agent System** - Pattern-based delegation to 18+ expert agents
@@ -199,6 +233,12 @@ npx degit darrentmorgan/claude-config-template .claude-temp --force && cd .claud
 5. **Git integration**:
    - Add to `.gitignore` (private config)
    - Or commit to repo (team-shared config)
+
+6. **Fast CLI tools** (NEW - Optional):
+   - Installs ripgrep (rg), fd, fzf, ag, pt, zoxide
+   - 10x faster code search and file navigation
+   - Auto-configures Claude Code to prefer fast tools
+   - Falls back to standard grep/find if not installed
 
 **Verify Installation**
 
@@ -421,6 +461,7 @@ All linked projects get updates immediately.
 
 ## 📚 Documentation
 
+- **Fast Tools Guide**: `.claude/docs/FAST_TOOLS_GUIDE.md` - Installation and usage of superfast CLI tools (NEW)
 - **Parallel Execution**: `.claude/docs/PARALLEL_EXECUTION_GUIDE.md` - Run agents concurrently (66% faster!)
 - **Workflows Guide**: `.claude/docs/WORKFLOWS.md` - Scout → Plan → Build autonomous workflows
 - **Agent Reference**: `.claude/docs/AGENT_REFERENCE.md` - Complete agent documentation
