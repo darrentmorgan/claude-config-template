@@ -211,6 +211,11 @@ When multiple solutions exist, prioritize in this order:
   - When: Designing system components or reviewing code
   - Contains: Frontend/backend patterns, code quality standards
 
+- **Next.js 15 Best Practices**: Read `.claude/docs/NEXTJS_BEST_PRACTICES.md` ⚡ CRITICAL
+  - When: Working on ANY Next.js component, page, route, or feature
+  - Contains: Server vs Client Components, data fetching, App Router, metadata, Server Actions, performance optimization
+  - **Must read before implementing Next.js features**
+
 - **Database Patterns**: Read `.claude/docs/DATABASE.md`
   - When: Working on schema, migrations, or queries
   - Contains: Schema design, RLS policies, migration patterns
@@ -283,6 +288,7 @@ your-project/
 │   │   ├── DELEGATION.md         # Full delegation protocol
 │   │   ├── AGENT_REFERENCE.md    # All agent capabilities
 │   │   ├── ARCHITECTURE.md       # Code patterns & guidelines
+│   │   ├── NEXTJS_BEST_PRACTICES.md  # Next.js 15 patterns (CRITICAL)
 │   │   ├── DATABASE.md           # Schema & migration patterns
 │   │   ├── TESTING.md            # Test strategies
 │   │   └── WORKFLOWS.md          # Scout→Plan→Build
