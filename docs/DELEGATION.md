@@ -23,7 +23,7 @@
 - **Debugging:** Investigating and fixing bugs → Use `debugger` agent
 - **Analysis & Explanation:** Understanding codebases → Use `general-purpose` or domain-specific agent
 - **Adding Features:** Implementing new functionality → Use domain-specific agent (frontend/backend/full-stack)
-- **Writing Tests:** Creating unit, integration, or E2E tests → Use `test-automator` or `qa-expert`
+- **Writing Tests:** Creating unit, integration, or E2E tests → Use `test-engineer` or `qa-expert`
 - **Documentation:** Generating or updating docs → Use `documentation-expert` or `api-documenter`
 - **Strategy & Planning:** Roadmaps, architecture → Use `product-manager` or `backend-architect`
 
@@ -74,7 +74,7 @@
 - [ ] Does this involve React components? → **Task(frontend-developer)**
 - [ ] Does this involve API/backend? → **Task(backend-architect)**
 - [ ] Does this involve database? → **Task(backend-architect or database-optimizer)**
-- [ ] Does this involve testing? → **Task(test-automator or qa-expert)**
+- [ ] Does this involve testing? → **Task(test-engineer or qa-expert)**
 - [ ] Does this involve MCP servers? → **Delegate to agent with MCP access**
 - [ ] Am I about to read > 5 files? → **STOP - Delegate instead**
 

@@ -45,7 +45,6 @@ your-project/
 │   │   │   ├── backend-architect.json     (supabase)
 │   │   │   ├── database-optimizer.json    (supabase)
 │   │   │   ├── qa-expert.json             (chrome-devtools, playwright)
-│   │   │   ├── test-automator.json        (chrome-devtools, playwright)
 │   │   │   ├── documentation-expert.json  (Context7)
 │   │   │   └── ...
 │   │   ├── delegation-map.json       # ✅ Routing rules
@@ -128,7 +127,7 @@ npx tsx .claude/scripts/delegation-router.ts "Add Button component" --plan
 # Expected output:
 # {
 #   "primary_agent": "frontend-developer",
-#   "secondary_agents": ["code-reviewer-pro", "test-automator"],
+#   "secondary_agents": ["code-reviewer-pro", "test-engineer"],
 #   "execution_mode": "parallel",
 #   "rationale": "Independent validation agents can run concurrently"
 # }
@@ -140,7 +139,6 @@ ls -la .claude/agents/configs/
 # backend-architect.json
 # database-optimizer.json
 # qa-expert.json
-# test-automator.json
 # etc.
 
 # Check MCP assignments

@@ -351,7 +351,7 @@ File changes auto-route to appropriate agents:
 
 - `*.tsx` → `frontend-developer`
 - `src/server/**` → `backend-architect`
-- `*.test.ts` → `test-automator`
+- `*.test.ts` → `test-engineer`
 - API contracts → `typescript-pro`
 - Migrations → `backend-architect`
 
