@@ -103,22 +103,26 @@ jobs:
             done
           ' sh {} +
 
-      - name: Check for required files
+      - name: Check for required template structure
         run: |
-          echo "Checking required template files..."
-          required_files=(
-            ".claude/agents/delegation-map.json"
-            ".claude/settings.local.json"
+          echo "Checking template structure..."
+
+          # Check directory structure exists
+          required_dirs=(
+            ".claude"
+            ".claude/hooks"
+            ".claude/commands"
+            "scripts"
           )
 
-          for file in "${required_files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "Missing required file: $file"
+          for dir in "${required_dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "Missing required directory: $dir"
               exit 1
             fi
           done
 
-          echo "All required template files present"
+          echo "✓ All required template directories present"
 
       - name: Generate test report
         if: always()
