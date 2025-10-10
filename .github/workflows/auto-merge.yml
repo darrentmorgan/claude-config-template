@@ -1,0 +1,306 @@
+name: Auto-Merge PR
+
+on:
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-merge:
+    name: Auto-Merge Approved PRs
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request_review' ||
+      github.event_name == 'check_suite' ||
+      (github.event_name == 'pull_request' && github.event.label.name == 'auto-merge')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get PR details
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let pr;
+
+            // Get PR number based on event type
+            if (context.eventName === 'pull_request_review') {
+              pr = context.payload.pull_request;
+            } else if (context.eventName === 'check_suite') {
+              const prs = context.payload.check_suite.pull_requests;
+              if (!prs || prs.length === 0) {
+                core.setOutput('skip', 'true');
+                return;
+              }
+              const prNumber = prs[0].number;
+              const { data } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+              pr = data;
+            } else if (context.eventName === 'pull_request') {
+              pr = context.payload.pull_request;
+            }
+
+            if (!pr) {
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            core.setOutput('number', pr.number);
+            core.setOutput('base', pr.base.ref);
+            core.setOutput('author', pr.user.login);
+            core.setOutput('draft', pr.draft);
+            core.setOutput('mergeable', pr.mergeable);
+
+      - name: Skip if no PR found
+        if: steps.pr.outputs.skip == 'true'
+        run: |
+          echo "No PR associated with this event, skipping"
+          exit 0
+
+      - name: Check if PR is draft
+        if: steps.pr.outputs.draft == 'true'
+        run: |
+          echo "PR is in draft state, skipping auto-merge"
+          exit 0
+
+      - name: Check if merging to protected branch
+        id: branch_check
+        env:
+          BASE_BRANCH: ${{ steps.pr.outputs.base }}
+        run: |
+          # Using environment variable to avoid injection
+          if [ "$BASE_BRANCH" = "main" ] || [ "$BASE_BRANCH" = "master" ]; then
+            echo "protected=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "protected=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check author permissions (for main branch)
+        if: steps.branch_check.outputs.protected == 'true'
+        id: author_check
+        uses: actions/github-script@v7
+        env:
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+        with:
+          script: |
+            const author = process.env.PR_AUTHOR;
+
+            // Check if author is dependabot
+            if (author === 'dependabot[bot]') {
+              core.setOutput('trusted', 'true');
+              return;
+            }
+
+            // Check if author has write permission
+            try {
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: author
+              });
+
+              const trustedRoles = ['admin', 'maintain', 'write'];
+              const isTrusted = trustedRoles.includes(permission.permission);
+
+              core.setOutput('trusted', isTrusted ? 'true' : 'false');
+            } catch (error) {
+              core.setOutput('trusted', 'false');
+            }
+
+      - name: Block untrusted authors on main branch
+        if: |
+          steps.branch_check.outputs.protected == 'true' &&
+          steps.author_check.outputs.trusted != 'true'
+        run: |
+          echo "Author does not have permission to auto-merge to protected branch"
+          exit 1
+
+      - name: Check for auto-merge label or dependabot
+        id: label_check
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+        with:
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+            const author = process.env.PR_AUTHOR;
+
+            // Auto-merge for dependabot
+            if (author === 'dependabot[bot]') {
+              core.setOutput('should_merge', 'true');
+              return;
+            }
+
+            // Check for auto-merge label
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const hasAutoMergeLabel = labels.some(label => label.name === 'auto-merge');
+            core.setOutput('should_merge', hasAutoMergeLabel ? 'true' : 'false');
+
+      - name: Skip if no auto-merge label
+        if: steps.label_check.outputs.should_merge != 'true'
+        run: |
+          echo "PR does not have auto-merge label, skipping"
+          exit 0
+
+      - name: Check if all checks passed
+        id: checks
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        with:
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+
+            // Get PR details
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // Get check runs for the head commit
+            const { data: checkRuns } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+
+            // Get commit statuses
+            const { data: statuses } = await github.rest.repos.getCombinedStatusForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+
+            // Check if all check runs passed
+            const failedChecks = checkRuns.check_runs.filter(
+              check => check.conclusion !== 'success' && check.conclusion !== 'skipped'
+            );
+
+            // Check if commit status is success
+            const statusSuccess = statuses.state === 'success' || statuses.statuses.length === 0;
+
+            const allChecksPassed = failedChecks.length === 0 && statusSuccess;
+            core.setOutput('passed', allChecksPassed ? 'true' : 'false');
+
+            if (!allChecksPassed) {
+              core.info(`Failed checks: ${failedChecks.map(c => c.name).join(', ')}`);
+              core.info(`Status state: ${statuses.state}`);
+            }
+
+      - name: Skip if checks failed
+        if: steps.checks.outputs.passed != 'true'
+        run: |
+          echo "Not all checks passed yet, skipping auto-merge"
+          exit 0
+
+      - name: Check for approvals
+        id: approval
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+        with:
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+            const author = process.env.PR_AUTHOR;
+
+            // Dependabot PRs don't need approval if checks pass
+            if (author === 'dependabot[bot]') {
+              core.setOutput('approved', 'true');
+              return;
+            }
+
+            // Get reviews
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // Get latest review from each reviewer
+            const reviewsByUser = {};
+            reviews.forEach(review => {
+              if (!reviewsByUser[review.user.login] ||
+                  new Date(review.submitted_at) > new Date(reviewsByUser[review.user.login].submitted_at)) {
+                reviewsByUser[review.user.login] = review;
+              }
+            });
+
+            // Count approvals
+            const approvals = Object.values(reviewsByUser).filter(
+              review => review.state === 'APPROVED'
+            ).length;
+
+            core.setOutput('approved', approvals >= 1 ? 'true' : 'false');
+            core.setOutput('approval_count', approvals);
+
+      - name: Skip if not approved
+        if: steps.approval.outputs.approved != 'true'
+        run: |
+          echo "PR does not have required approvals, skipping auto-merge"
+          exit 0
+
+      - name: Check for merge conflicts
+        if: steps.pr.outputs.mergeable == 'false'
+        run: |
+          echo "PR has merge conflicts, cannot auto-merge"
+          exit 1
+
+      - name: Enable auto-merge
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        with:
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+
+            try {
+              // Enable auto-merge with squash merge
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                merge_method: 'squash',
+                commit_title: `Auto-merge PR #${prNumber}`,
+              });
+
+              core.info(`Successfully merged PR #${prNumber}`);
+            } catch (error) {
+              core.setFailed(`Failed to merge PR: ${error.message}`);
+            }
+
+      - name: Comment on successful merge
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        with:
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER);
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: '✅ Auto-merged successfully! All checks passed and PR was approved.'
+            });
