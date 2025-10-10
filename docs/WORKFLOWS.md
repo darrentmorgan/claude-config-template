@@ -184,7 +184,7 @@ The workflow uses three meta-agents that delegate to specialists:
   - `frontend-developer` (React)
   - `backend-architect` (API/DB)
   - `typescript-pro` (Types)
-  - `test-automator` (Tests)
+  - `test-engineer` (Tests)
 - Incremental git commits
 - Run tests after each step
 - Validate quality gates
@@ -257,7 +257,7 @@ The workflow uses three meta-agents that delegate to specialists:
 ### Step 1: Test theme store
 - **Test**: theme.test.ts - toggle and persistence
 - **Implementation**: Zustand store scaffold
-- **Agents**: test-automator, frontend-developer
+- **Agents**: test-engineer, frontend-developer
 - **Tokens**: ~300 (small)
 
 ### Step 2: Implement store logic

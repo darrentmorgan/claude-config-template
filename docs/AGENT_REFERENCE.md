@@ -115,9 +115,9 @@ User: [Edits src/handlers/auth.ts]
 
 ---
 
-#### `test-automator`
+#### `test-engineer`
 **Purpose**: Test generation and automation
-**MCP Servers**: `chrome-devtools`, `playwright`
+**MCP Servers**: None (plugin:testing-suite)
 **Best For**:
 - Unit test generation
 - Integration testing
@@ -130,7 +130,7 @@ User: [Edits src/handlers/auth.ts]
 **Example Usage**:
 ```
 User: "Create tests for the login API handler"
-→ Delegates to: test-automator
+→ Delegates to: test-engineer
 → Returns: Test files with coverage report
 ```
 
@@ -376,14 +376,14 @@ All agents return responses with:
 ### Pre-Commit Gate
 
 **Required Agents**: `code-reviewer-pro`
-**Optional**: `typescript-pro`, `test-automator`
+**Optional**: `typescript-pro`, `test-engineer`
 **Minimum Score**: 80/100
 **Blocking**: Yes
 
 ### Pre-Deployment Gate
 
 **Required Agents**: `qa-expert`, `code-reviewer-pro`
-**Optional**: `test-automator`
+**Optional**: `test-engineer`
 **Minimum Score**: 85/100
 **Blocking**: Yes
 

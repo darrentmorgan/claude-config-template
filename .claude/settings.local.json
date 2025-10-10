@@ -92,6 +92,11 @@
             "type": "command",
             "command": ".claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/plugin-router.sh \"$USER_MESSAGE\"",
+            "timeout": 5
           }
         ]
       }

@@ -134,7 +134,7 @@ User: "How do I use React useEffect with cleanup?"
 | **frontend-developer** | None | Files: `*.tsx`, `*.jsx` |
 | **typescript-pro** | None | `type error`, `generics`, Files: `contracts.ts` |
 | **code-reviewer-pro** | None | Auto-triggered on Edit/Write |
-| **test-automator** | Playwright, Chrome | `test`, `playwright`, `test coverage` |
+| **test-engineer** | None (plugin:testing-suite) | `test`, `playwright`, `test coverage` |
 | **qa-expert** | Playwright, Chrome | `E2E test`, `screenshot`, `visual test` |
 | **deployment-engineer** | None | `CI/CD`, `deploy`, `docker` |
 | **database-optimizer** | Supabase | `optimize query`, `slow query`, `index` |

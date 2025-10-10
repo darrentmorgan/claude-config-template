@@ -205,7 +205,7 @@ When multiple solutions exist, prioritize in this order:
 - [ ] Does this involve React components? → **Task(frontend-developer)**
 - [ ] Does this involve API/backend? → **Task(backend-architect)**
 - [ ] Does this involve database? → **Task(backend-architect or database-optimizer)**
-- [ ] Does this involve testing? → **Task(test-automator or qa-expert)**
+- [ ] Does this involve testing? → **Task(test-engineer or qa-expert)**
 - [ ] Does this involve MCP servers? → **Delegate to agent with MCP access**
 - [ ] Am I about to read > 5 files? → **STOP - Delegate instead**
 
@@ -224,7 +224,7 @@ When multiple solutions exist, prioritize in this order:
 | API Endpoints | `backend-architect` | supabase |
 | TypeScript Types | `typescript-pro` | none |
 | E2E Tests | `qa-expert` | chrome-devtools, playwright |
-| Unit Tests | `test-automator` | chrome-devtools, playwright |
+| Unit Tests | `test-engineer` | none (plugin:testing-suite) |
 | Code Review | `code-reviewer-pro` | none |
 | Documentation | `documentation-expert` | Context7 |
 | Deployment | `deployment-engineer` | none |

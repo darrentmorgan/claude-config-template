@@ -148,7 +148,7 @@ function getAgentForKeywords(prompt: string, map: DelegationMap): string | null 
 
   const fileTypeKeywords = [
     // Test-related keywords first (higher priority than component keywords)
-    { keywords: ['test', 'spec', 'e2e', 'unit test', 'integration test'], agent: 'test-automator' },
+    { keywords: ['test', 'spec', 'e2e', 'unit test', 'integration test'], agent: 'test-engineer' },
     { keywords: ['migration', 'schema', 'database', 'sql', 'rls', 'rpc'], agent: 'backend-architect' },
     { keywords: ['api', 'handler', 'endpoint', 'route', 'express'], agent: 'backend-architect' },
     { keywords: ['component', 'react', 'tsx', 'ui', 'button', 'form'], agent: 'frontend-developer' },
@@ -212,7 +212,7 @@ function canRunInParallel(
   }
 
   // Independent validation agents can run in parallel (with p-limit control)
-  const parallelAgents = ['code-reviewer-pro', 'test-automator', 'typescript-pro'];
+  const parallelAgents = ['code-reviewer-pro', 'test-engineer', 'typescript-pro'];
   const allParallelizable = secondaries.every(agent => parallelAgents.includes(agent));
 
   // Primary creates code, secondaries validate → safe parallel (N=2)

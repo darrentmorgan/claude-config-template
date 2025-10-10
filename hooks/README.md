@@ -95,6 +95,82 @@ pnpm test
 .claude/hooks/test-result.sh $? .claude/.last-test-output.log
 ```
 
+### 5. `post-milestone.sh`
+**Triggers:** After completing major work phases (manual or automated)
+**Purpose:** Automate commit, push, PR creation, documentation, and context cleanup
+
+**What it does:**
+- Stages and commits all changes with auto-generated message
+- Pushes to remote repository
+- Documents changes in work log (`.claude/.work-log.md`)
+- Archives artifacts to `.claude/.archive/{timestamp}/`
+- Clears `.claude/artifacts/` for next phase
+- Updates scratchpad with session notes
+- Provides summary of milestone completion
+
+**When to use:**
+- After completing a major feature
+- Finishing a sprint task or milestone
+- End of a significant refactoring
+- Before transitioning to next work phase
+
+**Manual trigger:**
+```bash
+.claude/hooks/post-milestone.sh
+```
+
+**Auto-trigger (future):**
+Can be configured to run automatically when:
+- All tests pass after major changes
+- Specific commit message patterns detected
+- Manual flag in `.claude/.milestone-ready` file
+
+**Example output:**
+```
+🏁 Post-Milestone Hook Starting...
+📝 Analyzing changes for commit message...
+✓ Detected change type: feat(ui)
+✓ Summary: 8 files changed, 234 insertions(+), 45 deletions(-)
+📦 Staging all changes...
+📝 Creating commit...
+✓ Commit created successfully
+⬆️  Pushing to remote...
+✓ Pushed to origin/feature/dark-mode
+📚 Documenting changes...
+✓ Work log updated
+📁 Archiving artifacts...
+✓ Artifacts archived to .claude/.archive/2025-10-10-14-23/
+🧹 Clearing artifacts for next phase...
+✓ Artifacts cleared
+📝 Updating scratchpad...
+✓ Scratchpad updated
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎉 Milestone Completion Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Changes committed and pushed
+✓ Work documented in .claude/.work-log.md
+✓ Artifacts archived to .claude/.archive/2025-10-10-14-23/
+✓ Context cleared for next phase
+✓ Scratchpad updated with next actions
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### 6. `post-agent-execution.sh`
+**Triggers:** After each agent completes
+**Purpose:** Force garbage collection to prevent memory accumulation
+
+**What it does:**
+- Runs memory cleanup utility
+- Forces GC between agent invocations
+- Prevents memory crashes with multiple agents
+- Logs memory cleanup status
+
+**Critical for:**
+- Preventing heap out of memory errors
+- Sequential agent execution
+- Long-running automated workflows
+
 ## Hook Configuration
 
 ### Enabling Hooks
@@ -106,6 +182,8 @@ Hooks are configured in `.claude/settings.local.json`:
   "hooks": {
     "pre-commit": ".claude/hooks/pre-commit.sh",
     "post-commit": ".claude/hooks/post-commit.sh",
+    "post-milestone": ".claude/hooks/post-milestone.sh",
+    "post-agent-execution": ".claude/hooks/post-agent-execution.sh",
     "tool-use": ".claude/hooks/tool-use.sh",
     "test-result": ".claude/hooks/test-result.sh"
   },
@@ -147,6 +225,9 @@ Hooks generate logs in `.claude/`:
 | `.tool-use.log` | File modifications and agent suggestions |
 | `.test-history.log` | Test pass/fail history |
 | `.last-test-output.log` | Latest test execution output |
+| `.work-log.md` | Milestone completions and session notes |
+| `.scratchpad.md` | Current session notes and next actions |
+| `.archive/{timestamp}/` | Archived artifacts from completed milestones |
 
 ## Integration with Sub-Agents
 
@@ -189,6 +270,12 @@ Test each hook individually:
 # Test test-result hook
 pnpm test
 .claude/hooks/test-result.sh $?
+
+# Test post-milestone hook
+.claude/hooks/post-milestone.sh
+
+# Test post-agent-execution hook
+.claude/hooks/post-agent-execution.sh
 ```
 
 ### Integration Testing
