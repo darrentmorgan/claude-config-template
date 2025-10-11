@@ -13,10 +13,38 @@
 # Ensure we have project root for absolute paths
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 USER_REQUEST="$1"
+AUTO_DELEGATE_SCRIPT="$PROJECT_ROOT/.claude/scripts/auto-delegate.sh"
+AUTONOMY_LEVEL="${AUTONOMY_LEVEL:-high}"
 
 # Only process if request is non-empty
 if [ -z "$USER_REQUEST" ]; then
     exit 0
+fi
+
+# ============================================
+# PRIORITY 1: Check Auto-Delegation Queue
+# ============================================
+# If in autonomous mode, check for queued delegations first
+if [ "$AUTONOMY_LEVEL" = "high" ] && [ -f "$AUTO_DELEGATE_SCRIPT" ]; then
+    NEXT_TASK=$("$AUTO_DELEGATE_SCRIPT" next 2>/dev/null)
+
+    if [ "$NEXT_TASK" != "null" ] && [ -n "$NEXT_TASK" ]; then
+        # We have a queued delegation - output instruction BEFORE processing user request
+        echo "" >&2
+        echo "╔════════════════════════════════════════╗" >&2
+        echo "║  QUEUED DELEGATION DETECTED           ║" >&2
+        echo "╚════════════════════════════════════════╝" >&2
+        echo "" >&2
+
+        # Generate delegation instruction
+        "$AUTO_DELEGATE_SCRIPT" generate-instruction "$NEXT_TASK" >&2
+
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "After completing delegation, return here." >&2
+        echo "Current user request will then be processed." >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "" >&2
+    fi
 fi
 
 # Call delegation router script if it exists
