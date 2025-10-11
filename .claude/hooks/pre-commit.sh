@@ -2,6 +2,8 @@
 # Pre-commit hook: Quality gate before committing code
 # Runs linting, type checking, fast tests, and AI code review
 
+# Ensure we have project root for absolute paths
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 set -e  # Exit on error
 
 echo "🔍 Pre-commit Quality Gate Starting..."
