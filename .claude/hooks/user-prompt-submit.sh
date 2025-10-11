@@ -9,6 +9,8 @@
 # Usage: Called automatically by Claude Code on every user prompt submission
 #
 
+# Ensure we have project root for absolute paths
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 USER_REQUEST="$1"
 
 # ============================================
@@ -16,9 +18,9 @@ USER_REQUEST="$1"
 # ============================================
 
 # Check for updates once per day (silently, in background)
-if [ -f ".claude/scripts/check-updates.sh" ]; then
+if [ -f "$PROJECT_ROOT/.claude/scripts/check-updates.sh" ]; then
     # Only check if .version.json exists (template is installed)
-    if [ -f ".claude/.version.json" ]; then
+    if [ -f "$PROJECT_ROOT/.claude/.version.json" ]; then
         # Run check in background, suppress all output unless update found
         # The check-updates.sh script handles its own caching (24hr interval)
         UPDATE_OUTPUT=$(.claude/scripts/check-updates.sh 2>&1)
@@ -38,7 +40,7 @@ fi
 
 # Log session activity (lightweight tracking)
 if [ -n "$USER_REQUEST" ]; then
-    SESSION_LOG=".claude/.session.log"
+    SESSION_LOG="$PROJECT_ROOT/.claude/.session.log"
 
     # Create log directory if needed
     mkdir -p "$(dirname "$SESSION_LOG")"

@@ -40,7 +40,6 @@
       "mcp__clickup",
       "mcp__firecrawl-mcp",
       "mcp__Context7",
-      "mcp__playwright",
       "mcp__ide",
       "WebSearch",
       "WebFetch",
@@ -68,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tool.bash.block.sh \"$COMMAND\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool.bash.block.sh \"$COMMAND\"",
             "timeout": 5,
             "blockOnFailure": true
           }
@@ -81,7 +80,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tool-use.sh \"$FILE_PATH\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-use.sh \"$FILE_PATH\"",
             "timeout": 30
           }
         ]
@@ -91,7 +90,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tool-use.sh \"$FILE_PATH\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-use.sh \"$FILE_PATH\"",
             "timeout": 30
           }
         ]
@@ -101,7 +100,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/post-git-push.sh",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-git-push.sh",
             "timeout": 10
           }
         ]
@@ -112,17 +111,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/user-prompt-submit.sh \"$USER_MESSAGE\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/user-prompt-submit.sh \"$USER_MESSAGE\"",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": ".claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": ".claude/hooks/plugin-router.sh \"$USER_MESSAGE\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/plugin-router.sh \"$USER_MESSAGE\"",
             "timeout": 5
           }
         ]

@@ -8,13 +8,6 @@
         "chrome-devtools-mcp@latest",
         "--isolated"
       ]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ]
     }
   },
   "capabilities": [

@@ -7,11 +7,6 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-chrome-devtools"],
       "env": {}
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-playwright"],
-      "env": {}
     }
   },
   "capabilities": [
