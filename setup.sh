@@ -305,53 +305,16 @@ replace_placeholders ".claude/agents/delegation-map.json"
 
 echo -e "${GREEN}✓ Placeholders replaced${NC}"
 
-# Step 6: Setup global agent sharing (optional)
+# Step 6: Create necessary directories
 echo ""
-echo -e "${YELLOW}Step 6: Global Agent Sharing (Optional)${NC}"
-echo "Would you like to use shared agents from ~/.claude/agents?"
-echo "This reduces duplication across projects."
-read -p "Enable global agent sharing? (y/n): " share_agents
-
-if [ "$share_agents" = "y" ]; then
-    GLOBAL_AGENTS_DIR="$HOME/.claude/agents/shared"
-
-    if [ ! -d "$GLOBAL_AGENTS_DIR" ]; then
-        echo "📦 Creating global agents directory..."
-        mkdir -p "$GLOBAL_AGENTS_DIR"
-
-        # Copy agent configs to global location
-        show_progress 1 3 "Copying agent configs..."
-        cp -r .claude/agents/configs "$GLOBAL_AGENTS_DIR/"
-
-        show_progress 2 3 "Copying MCP mappings..."
-        cp .claude/agents/mcp-mapping.json "$GLOBAL_AGENTS_DIR/"
-
-        show_progress 3 3 "Global agents setup complete"
-        printf "\n"
-
-        echo -e "${GREEN}✓ Global agents created at ~/.claude/agents/shared${NC}"
-    fi
-
-    # Create symlink
-    echo "🔗 Creating symlink to global agents..."
-    rm -rf .claude/agents/configs
-    ln -s "$GLOBAL_AGENTS_DIR/configs" .claude/agents/configs
-
-    echo -e "${GREEN}✓ Linked to global agents${NC}"
-else
-    echo "Using local agents only"
-fi
-
-# Step 7: Create necessary directories
-echo ""
-echo -e "${YELLOW}Step 7: Creating log directories...${NC}"
+echo -e "${YELLOW}Step 6: Creating log directories...${NC}"
 mkdir -p .claude/logs
 
 echo -e "${GREEN}✓ Log directories created${NC}"
 
-# Step 8: Git setup
+# Step 7: Git setup
 echo ""
-echo -e "${YELLOW}Step 8: Git Integration${NC}"
+echo -e "${YELLOW}Step 7: Git Integration${NC}"
 
 if [ -d ".git" ]; then
     echo "Git repository detected."
@@ -380,9 +343,9 @@ else
     echo "No git repository found - skipping git integration"
 fi
 
-# Step 9: Update global CLAUDE.md (optional)
+# Step 8: Update global CLAUDE.md (optional)
 echo ""
-echo -e "${YELLOW}Step 9: Global CLAUDE.md Update (Optional)${NC}"
+echo -e "${YELLOW}Step 8: Global CLAUDE.md Update (Optional)${NC}"
 echo "Would you like to add agent reference documentation to your global CLAUDE.md?"
 echo "This adds a comprehensive agent guide to ~/.claude/CLAUDE.md"
 echo ""
@@ -403,9 +366,9 @@ else
     echo "  bash $SCRIPT_DIR/scripts/update-claude-md.sh"
 fi
 
-# Step 10: Environment Configuration
+# Step 9: Environment Configuration
 echo ""
-echo -e "${YELLOW}Step 10: Environment Configuration (Optional)${NC}"
+echo -e "${YELLOW}Step 9: Environment Configuration (Optional)${NC}"
 echo "Configure execution mode and memory settings?"
 echo ""
 echo "Options:"
@@ -505,9 +468,9 @@ else
     echo "Skipped environment setup"
 fi
 
-# Step 11: Fast CLI Tools Installation (Optional)
+# Step 10: Fast CLI Tools Installation (Optional)
 echo ""
-echo -e "${YELLOW}Step 11: Fast CLI Tools Installation (Optional)${NC}"
+echo -e "${YELLOW}Step 10: Fast CLI Tools Installation (Optional)${NC}"
 echo "Install superfast CLI tools for better performance?"
 echo ""
 echo "These tools significantly speed up code search and navigation:"
@@ -661,7 +624,7 @@ case $fast_tools_choice in
         ;;
 esac
 
-# Step 12: Final instructions
+# Step 11: Final instructions
 echo ""
 printf "["
 printf "%50s" | tr ' ' '█'
@@ -689,6 +652,5 @@ echo "  - Commands: .claude/commands/*.md"
 echo ""
 echo -e "${YELLOW}Global Config:${NC}"
 echo "  - CLAUDE.md: ~/.claude/CLAUDE.md (global instructions)"
-echo "  - Shared agents: ~/.claude/agents/shared/ (if enabled)"
 echo ""
 echo -e "${GREEN}Happy coding with Claude! 🚀${NC}"
