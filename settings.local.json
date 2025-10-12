@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tool-use.sh \"$FILE_PATH\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-use.sh \"$FILE_PATH\"",
             "timeout": 30
           }
         ]
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/tool-use.sh \"$FILE_PATH\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-use.sh \"$FILE_PATH\"",
             "timeout": 30
           }
         ]
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-request-router.sh \"$USER_MESSAGE\"",
             "timeout": 10
           },
           {
