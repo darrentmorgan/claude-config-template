@@ -1,0 +1,90 @@
+[tool.poetry]
+name = "code-graph-indexer"
+version = "0.1.0"
+description = "Intelligent code graph and context retrieval system for multi-agent workflows"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "code_graph", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# Tree-sitter for parsing (using language-pack for all 165+ languages)
+tree-sitter = "^0.25.0"
+tree-sitter-language-pack = "^0.10.0"
+# Memgraph driver
+gqlalchemy = "^1.4.0"
+# Embeddings
+sentence-transformers = "^2.2.0"
+torch = "^2.0.0"
+# File watching
+watchdog = "^3.0.0"
+# Async operations
+aiofiles = "^23.0.0"
+# Data validation
+pydantic = "^2.0.0"
+# CLI framework
+click = "^8.1.0"
+# Configuration
+pyyaml = "^6.0.0"
+# Utilities
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+# Testing
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+hypothesis = "^6.82.0"
+pytest-benchmark = "^4.0.0"
+# Linting and formatting
+ruff = "^0.0.280"
+black = "^23.7.0"
+# Type checking
+mypy = "^1.4.0"
+# Pre-commit hooks
+pre-commit = "^3.3.0"
+
+[tool.poetry.scripts]
+code-graph = "code_graph.cli.main:cli"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=src/code_graph --cov-report=html --cov-report=term"
+
+[tool.coverage.run]
+source = ["src/code_graph"]
+omit = ["tests/*", "**/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
