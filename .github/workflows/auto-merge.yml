@@ -7,6 +7,10 @@ on:
     types: [completed]
   pull_request:
     types: [labeled]
+  workflow_run:
+    workflows: ["PR Testing & Quality Gates"]
+    types: [completed]
+    branches: ['**']
 
 permissions:
   contents: write
@@ -20,6 +24,7 @@ jobs:
     if: |
       github.event_name == 'pull_request_review' ||
       github.event_name == 'check_suite' ||
+      github.event_name == 'workflow_run' ||
       (github.event_name == 'pull_request' && github.event.label.name == 'auto-merge')
 
     steps:
@@ -49,6 +54,21 @@ jobs:
                 pull_number: prNumber
               });
               pr = data;
+            } else if (context.eventName === 'workflow_run') {
+              // Get PR from workflow_run event
+              const prs = context.payload.workflow_run.pull_requests;
+              if (!prs || prs.length === 0) {
+                core.setOutput('skip', 'true');
+                return;
+              }
+              const prNumber = prs[0].number;
+              const { data } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+              pr = data;
+            
             } else if (context.eventName === 'pull_request') {
               pr = context.payload.pull_request;
             }
