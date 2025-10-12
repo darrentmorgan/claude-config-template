@@ -1,0 +1,684 @@
+openapi: 3.0.3
+info:
+  title: Code Graph Indexer API
+  description: API for indexing repository code structure and relationships
+  version: 1.0.0
+  contact:
+    name: Code Graph Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+
+paths:
+  /index:
+    post:
+      summary: Index a repository
+      description: |
+        Initiates full indexing of a repository. Parses all supported files,
+        builds the code graph, and persists to storage with WAL.
+
+        **Performance**: <10 minutes for 10K files
+        **Coverage Target**: ≥80% of files successfully indexed
+      operationId: indexRepository
+      tags:
+        - Indexing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexRequest'
+      responses:
+        '202':
+          description: Indexing started (async operation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexJob'
+        '400':
+          description: Invalid request (bad path, unsupported language)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Repository already being indexed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /index/{jobId}/status:
+    get:
+      summary: Get indexing status
+      description: Returns current status of an indexing job
+      operationId: getIndexStatus
+      tags:
+        - Indexing
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexStatus'
+        '404':
+          description: Job not found
+
+  /index/incremental:
+    post:
+      summary: Incremental index update
+      description: |
+        Updates the graph for specific changed files only.
+        Triggered by file save hooks.
+
+        **Performance**: <2 seconds per file
+      operationId: incrementalUpdate
+      tags:
+        - Indexing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncrementalUpdateRequest'
+      responses:
+        '200':
+          description: Update completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncrementalUpdateResult'
+        '400':
+          description: Invalid request
+
+  /query:
+    post:
+      summary: Query for relevant code
+      description: |
+        Retrieves relevant code files and nodes for a natural language task description.
+        Uses hybrid scoring: 0.4·semantic + 0.4·graph + 0.2·execution signals.
+
+        **Performance**: <3 seconds
+        **Result Limit**: Max 12 files to avoid overwhelming context
+      operationId: queryCode
+      tags:
+        - Retrieval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: Results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextPack'
+        '400':
+          description: Invalid query
+
+  /graph/neighbors:
+    get:
+      summary: Get neighbors within N hops
+      description: |
+        Explores the graph to find all nodes related to a target node
+        within N relationship hops.
+      operationId: getNeighbors
+      tags:
+        - Graph
+      parameters:
+        - name: nodeId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: maxHops
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 2
+        - name: edgeTypes
+          in: query
+          required: false
+          description: Filter by edge types (comma-separated)
+          schema:
+            type: string
+            example: "IMPORTS,CALLS"
+      responses:
+        '200':
+          description: Neighbors retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NeighborResult'
+
+  /graph/impact:
+    get:
+      summary: Get impact map for a node
+      description: |
+        Shows all downstream dependents (code that uses this node)
+        and upstream dependencies (code this node uses).
+      operationId: getImpactMap
+      tags:
+        - Graph
+      parameters:
+        - name: nodeId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: maxDepth
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 3
+      responses:
+        '200':
+          description: Impact map generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpactMap'
+
+  /tests/related:
+    get:
+      summary: Find tests related to changed code
+      description: |
+        Identifies which tests cover the specified code elements,
+        enabling targeted test execution.
+      operationId: getRelatedTests
+      tags:
+        - Testing
+      parameters:
+        - name: nodeIds
+          in: query
+          required: true
+          description: Comma-separated list of node IDs
+          schema:
+            type: string
+        - name: includeIntegration
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Related tests found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelatedTests'
+
+  /snapshot:
+    post:
+      summary: Create index snapshot
+      description: Creates a point-in-time snapshot of the current graph state
+      operationId: createSnapshot
+      tags:
+        - Persistence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotRequest'
+      responses:
+        '201':
+          description: Snapshot created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+
+  /snapshot/{snapshotId}:
+    get:
+      summary: Get snapshot details
+      operationId: getSnapshot
+      tags:
+        - Persistence
+      parameters:
+        - name: snapshotId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Snapshot retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+
+  /health:
+    get:
+      summary: Health check
+      description: Returns service health and index statistics
+      operationId: healthCheck
+      tags:
+        - Monitoring
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+components:
+  schemas:
+    IndexRequest:
+      type: object
+      required:
+        - repositoryPath
+      properties:
+        repositoryPath:
+          type: string
+          description: Absolute path to repository root
+          example: "/Users/dev/projects/my-repo"
+        languages:
+          type: array
+          items:
+            type: string
+            enum: [python, typescript, javascript, go, java]
+          description: Languages to index (defaults to all supported)
+        excludePatterns:
+          type: array
+          items:
+            type: string
+          description: Glob patterns for files to exclude
+          example: ["node_modules/**", "**/*.test.ts"]
+        enableEmbeddings:
+          type: boolean
+          default: true
+          description: Whether to compute semantic embeddings
+
+    IndexJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        repositoryPath:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        estimatedCompletion:
+          type: string
+          format: date-time
+
+    IndexStatus:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        progress:
+          type: object
+          properties:
+            filesProcessed:
+              type: integer
+            filesTotal:
+              type: integer
+            percentComplete:
+              type: number
+              format: float
+        stats:
+          type: object
+          properties:
+            nodesCreated:
+              type: integer
+            edgesCreated:
+              type: integer
+            parseErrors:
+              type: integer
+            coveragePercentage:
+              type: number
+              format: float
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexError'
+        completedAt:
+          type: string
+          format: date-time
+
+    IndexError:
+      type: object
+      properties:
+        filePath:
+          type: string
+        errorType:
+          type: string
+          enum: [parse_error, encoding_error, io_error]
+        message:
+          type: string
+        lineNumber:
+          type: integer
+
+    IncrementalUpdateRequest:
+      type: object
+      required:
+        - repositoryPath
+        - changedFiles
+      properties:
+        repositoryPath:
+          type: string
+        changedFiles:
+          type: array
+          items:
+            type: object
+            required:
+              - path
+              - contentHash
+            properties:
+              path:
+                type: string
+              contentHash:
+                type: string
+                description: SHA-256 hash of new file contents
+
+    IncrementalUpdateResult:
+      type: object
+      properties:
+        filesUpdated:
+          type: integer
+        nodesModified:
+          type: integer
+        edgesModified:
+          type: integer
+        durationMs:
+          type: integer
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexError'
+
+    QueryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Natural language task description
+          example: "Add email validation to user registration"
+        repositoryPath:
+          type: string
+        maxResults:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 12
+        executionSignals:
+          type: object
+          description: Optional execution context (error logs, traces)
+          properties:
+            errorLogs:
+              type: array
+              items:
+                type: string
+            stackTraces:
+              type: array
+              items:
+                type: string
+            recentChanges:
+              type: array
+              items:
+                type: string
+
+    ContextPack:
+      type: object
+      properties:
+        query:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileReference'
+        totalConfidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        retrievalTimestamp:
+          type: string
+          format: date-time
+        maxHops:
+          type: integer
+
+    FileReference:
+      type: object
+      properties:
+        path:
+          type: string
+        relevanceScore:
+          type: number
+          format: float
+        rationale:
+          type: string
+          description: Why this file was selected
+          example: "Contains UserService.authenticate() called by LoginController"
+        relatedNodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeReference'
+
+    NodeReference:
+      type: object
+      properties:
+        nodeId:
+          type: string
+        nodeType:
+          type: string
+          enum: [FileNode, ModuleNode, ClassNode, FunctionNode, TestNode]
+        name:
+          type: string
+        qualifiedName:
+          type: string
+        score:
+          type: number
+          format: float
+        scoreBreakdown:
+          $ref: '#/components/schemas/ScoreBreakdown'
+
+    ScoreBreakdown:
+      type: object
+      properties:
+        semanticScore:
+          type: number
+          format: float
+          description: Embedding similarity (0-1)
+        graphScore:
+          type: number
+          format: float
+          description: Graph proximity (0-1)
+        executionScore:
+          type: number
+          format: float
+          description: Execution signal relevance (0-1)
+        hybridScore:
+          type: number
+          format: float
+          description: Weighted combination (0.4*semantic + 0.4*graph + 0.2*execution)
+
+    NeighborResult:
+      type: object
+      properties:
+        sourceNode:
+          $ref: '#/components/schemas/NodeReference'
+        neighbors:
+          type: array
+          items:
+            type: object
+            properties:
+              node:
+                $ref: '#/components/schemas/NodeReference'
+              distance:
+                type: integer
+                description: Number of hops from source
+              edgePath:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    edgeType:
+                      type: string
+                    confidence:
+                      type: number
+                      format: float
+
+    ImpactMap:
+      type: object
+      properties:
+        targetNode:
+          $ref: '#/components/schemas/NodeReference'
+        upstreamDependencies:
+          type: array
+          description: Code this node depends on
+          items:
+            $ref: '#/components/schemas/NodeReference'
+        downstreamDependents:
+          type: array
+          description: Code that depends on this node
+          items:
+            $ref: '#/components/schemas/NodeReference'
+        blastRadius:
+          type: integer
+          description: Total number of affected nodes
+
+    RelatedTests:
+      type: object
+      properties:
+        changedNodes:
+          type: array
+          items:
+            type: string
+        directTests:
+          type: array
+          description: Tests that directly cover changed code
+          items:
+            $ref: '#/components/schemas/TestReference'
+        indirectTests:
+          type: array
+          description: Integration tests that may be affected
+          items:
+            $ref: '#/components/schemas/TestReference'
+        estimatedCoverage:
+          type: number
+          format: float
+          description: Percentage of changed code paths covered
+
+    TestReference:
+      type: object
+      properties:
+        nodeId:
+          type: string
+        qualifiedName:
+          type: string
+        testType:
+          type: string
+          enum: [unit, integration, e2e]
+        filePath:
+          type: string
+        estimatedDuration:
+          type: integer
+          description: Milliseconds
+
+    SnapshotRequest:
+      type: object
+      properties:
+        repositoryPath:
+          type: string
+        label:
+          type: string
+          description: Optional label for snapshot
+        includeMetadata:
+          type: boolean
+          default: true
+
+    Snapshot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        repositoryPath:
+          type: string
+        commitHash:
+          type: string
+        nodeCount:
+          type: integer
+        edgeCount:
+          type: integer
+        storageSizeBytes:
+          type: integer
+        coveragePercentage:
+          type: number
+          format: float
+        label:
+          type: string
+
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        version:
+          type: string
+        memgraphConnected:
+          type: boolean
+        activeJobs:
+          type: integer
+        indexStats:
+          type: object
+          properties:
+            totalRepositories:
+              type: integer
+            totalNodes:
+              type: integer
+            totalEdges:
+              type: integer
+            lastIndexed:
+              type: string
+              format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object

@@ -40,3 +40,60 @@ node_modules/
 # Environment files
 .env
 .env.local
+
+# Speckit artifacts (may contain sensitive information)
+.specify/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# Poetry
+poetry.lock
+.poetry/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmyp.json
+
+# Ruff
+.ruff_cache/
+
+# Code Graph specific
+.code-graph/
+*.index
+*.snapshot

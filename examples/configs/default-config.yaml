@@ -1,0 +1,59 @@
+# Code Graph Indexer Configuration
+# Place this file at .code-graph/config.yaml in your repository
+
+# Languages to index
+languages:
+  - python
+  - typescript
+  - javascript
+  - go
+  - java
+
+# Exclude patterns (glob format)
+exclude:
+  - "**/node_modules/**"
+  - "**/__pycache__/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/*.min.js"
+  - "**/.venv/**"
+  - "**/venv/**"
+
+# Indexing settings
+indexing:
+  parallel_workers: 8
+  enable_embeddings: true
+  error_tolerance: 0.70  # Confidence threshold for warnings
+
+# Embeddings configuration
+embeddings:
+  model: "nomic-ai/nomic-embed-code"
+  cache_size: 10000
+  lazy_compute: true  # Compute on-demand rather than during indexing
+
+# Memgraph connection
+memgraph:
+  host: "127.0.0.1"
+  port: 7687
+  username: ""
+  password: ""
+
+# WAL settings
+wal:
+  enabled: true
+  snapshot_interval: "5m"
+  wal_file_size: "20MB"
+
+# Query settings
+query:
+  default_max_results: 12
+  default_max_hops: 2
+  hybrid_weights:
+    semantic: 0.4
+    graph: 0.4
+    execution: 0.2
+
+# Watch settings (for incremental updates)
+watch:
+  debounce_ms: 500
+  recursive: true
