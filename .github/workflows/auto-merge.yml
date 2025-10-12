@@ -230,6 +230,28 @@ jobs:
               return;
             }
 
+            // Check if author has write permission (trusted)
+            try {
+              const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: author
+              });
+
+              const trustedRoles = ['admin', 'maintain', 'write'];
+              const isTrusted = trustedRoles.includes(permission.permission);
+
+              // Trusted authors with passing tests don't need approval
+              if (isTrusted) {
+                core.setOutput('approved', 'true');
+                core.info(`Author ${author} is trusted (${permission.permission}), approval not required`);
+                return;
+              }
+            } catch (error) {
+              core.warning(`Failed to check permissions: ${error.message}`);
+            }
+
+            // For external contributors, require approval
             // Get reviews
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
