@@ -15,8 +15,10 @@ class ParserResult(BaseModel):
     modules: list[Any]  # ModuleNode instances
     classes: list[Any]  # ClassNode instances
     functions: list[Any]  # FunctionNode instances
-    imports: list[tuple[str, list[str]]]  # (target_path, imported_names)
+    imports: list[Any]  # Import objects or tuples
     errors: list[dict[str, Any]]
+    edges: list[Any] = []  # BaseEdge instances
+    success: bool = True  # Whether parsing succeeded
 
 
 class BaseParser(ABC):
