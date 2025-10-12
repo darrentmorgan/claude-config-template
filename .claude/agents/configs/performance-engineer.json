@@ -1,6 +1,6 @@
 {
   "agentName": "performance-engineer",
-  "description": "Performance optimization specialist for web vitals, backend, and database",
+  "description": "Use PROACTIVELY when performance issues detected or after significant code changes. MUST BE USED with Chrome DevTools MCP for Core Web Vitals optimization, bottleneck analysis, and performance profiling.",
   "model": "claude-sonnet-4-5-20250929",
   "mcpServers": {
     "chrome-devtools": {
