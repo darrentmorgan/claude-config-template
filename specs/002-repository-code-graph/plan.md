@@ -132,37 +132,37 @@ specs/[###-feature]/
 ### Source Code (repository root)
 
 ```
-src/code-graph/
+src/code_graph/
 ├── indexer/
 │   ├── parsers/              # Language-specific parsers (tree-sitter wrappers)
-│   │   ├── base.py/ts        # Base parser interface
-│   │   ├── python.py/ts      # Python parser
-│   │   ├── typescript.py/ts  # TypeScript parser
-│   │   └── [go, java, etc.]
-│   ├── graph_builder.py/ts   # Constructs graph from parsed code
-│   ├── relationship_extractor.py/ts  # Identifies edges between nodes
-│   └── error_tolerant.py/ts  # Handles syntax errors, partial parsing
+│   │   ├── base.py           # Base parser interface
+│   │   ├── python_parser.py  # Python parser
+│   │   ├── typescript_parser.py  # TypeScript parser
+│   │   └── [go_parser, java_parser, etc.]
+│   ├── graph_builder.py      # Constructs graph from parsed code
+│   ├── relationship_extractor.py  # Identifies edges between nodes
+│   └── error_tolerant.py     # Handles syntax errors, partial parsing
 │
 ├── storage/
-│   ├── graph_store.py/ts     # Graph persistence (chosen technology)
-│   ├── wal.py/ts             # Write-Ahead Log implementation
-│   └── snapshot.py/ts        # Point-in-time snapshots
+│   ├── graph_store.py        # Graph persistence (chosen technology)
+│   ├── wal.py                # Write-Ahead Log implementation
+│   └── snapshot.py           # Point-in-time snapshots
 │
 ├── retrieval/
-│   ├── embeddings.py/ts      # Semantic similarity computation
-│   ├── graph_distance.py/ts  # Graph proximity calculation
-│   ├── execution_signals.py/ts  # Parse logs, traces for signals
-│   ├── hybrid_scorer.py/ts   # Combines α·semantic + β·graph + γ·signals
-│   └── context_pack.py/ts    # Assembles retrieval results with rationales
+│   ├── embeddings.py         # Semantic similarity computation
+│   ├── graph_distance.py     # Graph proximity calculation
+│   ├── execution_signals.py  # Parse logs, traces for signals
+│   ├── hybrid_scorer.py      # Combines α·semantic + β·graph + γ·signals
+│   └── context_pack.py       # Assembles retrieval results with rationales
 │
 ├── incremental/
-│   ├── file_watcher.py/ts    # Monitors file save events
-│   ├── diff_analyzer.py/ts   # Identifies changed symbols
-│   └── graph_updater.py/ts   # Updates only affected nodes/edges
+│   ├── file_watcher.py       # Monitors file save events
+│   ├── diff_analyzer.py      # Identifies changed symbols
+│   └── graph_updater.py      # Updates only affected nodes/edges
 │
 ├── integration/
-│   ├── agent_context.py/ts   # Provides context to agent delegation system
-│   └── manual_query.py/ts    # CLI/API for manual queries
+│   ├── agent_context.py      # Provides context to agent delegation system
+│   └── manual_query.py       # CLI/API for manual queries
 │
 ├── models/                   # Data models (Node, Edge, ContextPack, etc.)
 └── cli/                      # Command-line interface

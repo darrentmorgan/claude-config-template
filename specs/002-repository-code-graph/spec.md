@@ -110,7 +110,7 @@ As a developer using automated workflows, I need the system to identify which te
 - How does the system prioritize when multiple relationship paths exist between a query and candidate files?
 - What happens when the repository is so large that the full graph doesn't fit in memory?
 - How does retrieval work when a task description is ambiguous or uses non-standard terminology?
-- What happens when execution signals (error logs) reference files that no longer exist in the current codebase?
+- What happens when execution signals (error logs) reference files that no longer exist in the current codebase? → System should display warnings for stale signals, mark with low confidence, and continue with graph/semantic components only (cap neighbor expansion at N=5 hops maximum per FR-010)
 
 ## Requirements *(mandatory)*
 
@@ -121,14 +121,25 @@ As a developer using automated workflows, I need the system to identify which te
 - **FR-003**: System MUST handle syntax errors and broken dependencies gracefully by extracting partial structure and marking uncertain relationships with confidence scores, displaying warnings to users when relationship confidence is ≤70% (medium threshold balancing safety and usability)
 - **FR-004**: System MUST support incremental indexing triggered by file save hooks (editor integration) where only modified files and affected relationships are updated within 2 seconds of save
 - **FR-005**: System MUST complete full repository indexing in under 10 minutes for medium-sized codebases (5,000-10,000 files)
-- **FR-006**: System MUST complete incremental updates for single file changes in under 2 seconds
+- **FR-006**: System MUST complete incremental updates for single file changes in under 2 seconds (95th percentile) for repositories up to 100K lines of code
 - **FR-007**: System MUST retrieve relevant code for natural-language task descriptions using hybrid scoring that combines semantic similarity, graph proximity, and execution signals
+- **FR-007.1**: System MUST capture execution signals from runtime data:
+  - Error stack traces (file paths, line numbers from exceptions)
+  - Test failure locations (pytest output, assertion file paths)
+  - Runtime logs containing file/function references
+  - Debugger breakpoint locations
+  - Profiler hotspot file paths
+  - Execution signals contribute 0.2 weight to hybrid ranking score (see FR-007)
+  - When no execution signals available, use 0.0 for signal component (fallback to 0.5·embedding + 0.5·graph)
 - **FR-008**: System MUST return search results in under 3 seconds with a maximum of 12 files/regions to avoid overwhelming context
 - **FR-009**: System MUST provide rationales explaining why each retrieved file is relevant (e.g., "Contains UserService.authenticate() called by LoginController", "Test file for UserService", "Defines User interface imported by UserService")
 - **FR-010**: System MUST support neighbor expansion where users can explore related code within N hops (1-hop, 2-hop, etc.) from any file or symbol
+  - Default: N=2 hops (expand out 2 levels from matched node)
+  - Configurable: 1-5 hops via query parameter
+  - Edge types considered: IMPORTS, INHERITS, CALLS (FR-002)
 - **FR-011**: System MUST identify test files related to code changes to enable targeted test execution before running full suites
 - **FR-012**: System MUST generate impact maps showing upstream dependencies and downstream dependents for any code element
-- **FR-013**: System MUST integrate with existing agent delegation system to provide context automatically when agents receive tasks, AND support manual query invocation by developers for exploration or verification (hybrid automatic + manual approach)
+- **FR-013**: System MUST integrate with existing agent delegation system to provide context automatically when agents receive tasks, AND support manual query invocation by developers for exploration or verification (hybrid automatic + manual approach). Uses execution signals as defined in FR-007.1 for hybrid ranking.
 - **FR-014**: System MUST persist index state across sessions using Write-Ahead Logging (WAL) where changes are logged immediately to disk and applied asynchronously to the main index, ensuring durability with minimal write latency, and support snapshotting for reproducible builds
 - **FR-015**: System MUST provide visibility into indexing progress, errors encountered, and coverage metrics (percentage of files successfully indexed)
 
@@ -138,7 +149,7 @@ As a developer using automated workflows, I need the system to identify which te
 - **Node**: A code element (file, module, class, function, test) with attributes (name, path, type, content hash, parse status)
 - **Edge**: A relationship between nodes with attributes (type: contains/imports/calls/inherits/reads/writes/tests, confidence: high/medium/low, metadata)
 - **Context Pack**: A retrieval result containing relevant files/regions, rationales for inclusion, confidence scores, and related neighbors within specified hops
-- **Hybrid Score**: A weighted combination using the formula: 0.4·embedding_similarity + 0.4·(1/(1+graph_distance)) + 0.2·execution_signals. This balanced weighting equally prioritizes semantic meaning and structural relationships, with a moderate boost from runtime data (error logs, stack traces, recent changes)
+- **Hybrid Score**: A weighted combination using the formula: 0.4·embedding_similarity + 0.4·(1/(1+graph_distance)) + 0.2·execution_signals. This balanced weighting equally prioritizes semantic meaning and structural relationships, with a moderate boost from runtime data. Execution signals defined in FR-007.1. When signals unavailable, fallback to 0.5·embedding + 0.5·graph (normalize remaining weights).
 - **Index Snapshot**: A point-in-time capture of the code graph state used for reproducible builds and rollback
 - **Impact Map**: A visualization showing all code affected by changes to a target element, organized by relationship type and hop distance
 - **Execution Signal**: Runtime information (error messages, stack traces, failing tests, performance data) that informs retrieval prioritization
@@ -152,7 +163,7 @@ As a developer using automated workflows, I need the system to identify which te
 - **SC-003**: Full repository indexing completes in under 10 minutes for repositories up to 10,000 files
 - **SC-004**: Incremental updates after single file changes complete in under 2 seconds in 95% of cases
 - **SC-005**: System successfully extracts partial structure from files with syntax errors in 80% of cases, enabling them to appear in search results with confidence warnings
-- **SC-006**: Search queries return results in under 3 seconds in 95% of cases
+- **SC-006**: Search queries return results in under 3 seconds (95th percentile, measured over 100 query samples) in 95% of cases
 - **SC-007**: Targeted test selection identifies relevant tests that cover 90% of code paths affected by changes
 - **SC-008**: Impact maps accurately show all downstream dependents within 3 hops for any code element
 - **SC-009**: Agents using automated context retrieval require 60% fewer clarification questions about which files to examine compared to manual file specification

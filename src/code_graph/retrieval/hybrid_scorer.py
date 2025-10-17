@@ -1,98 +1,55 @@
-"""Hybrid scoring engine combining semantic, graph, and execution signals."""
+"""Hybrid scorer: 0.4·semantic + 0.4·graph + 0.2·execution."""
 
 from typing import Optional
 
-from code_graph.models.context_pack import ScoreBreakdown
-
 
 class HybridScorer:
-    """Combines multiple scoring signals using weighted formula.
-
-    Formula: 0.4·semantic_similarity + 0.4·graph_proximity + 0.2·execution_signals
-
-    This balanced weighting equally prioritizes semantic meaning and structural
-    relationships, with a moderate boost from runtime data.
-    """
+    """Combines semantic, graph, and execution signal scores."""
 
     def __init__(
         self,
-        semantic_weight: float = 0.4,
+        embedding_weight: float = 0.4,
         graph_weight: float = 0.4,
-        execution_weight: float = 0.2,
+        signal_weight: float = 0.2
     ):
-        """Initialize hybrid scorer with custom weights.
+        """Initialize hybrid scorer.
 
         Args:
-            semantic_weight: Weight for embedding similarity (default: 0.4)
-            graph_weight: Weight for graph distance (default: 0.4)
-            execution_weight: Weight for execution signals (default: 0.2)
-
-        Raises:
-            ValueError: If weights don't sum to 1.0
+            embedding_weight: Weight for semantic similarity (default 0.4)
+            graph_weight: Weight for graph proximity (default 0.4)
+            signal_weight: Weight for execution signals (default 0.2)
         """
-        total = semantic_weight + graph_weight + execution_weight
-        if abs(total - 1.0) > 0.001:
-            raise ValueError(f"Weights must sum to 1.0, got {total}")
-
-        self.semantic_weight = semantic_weight
+        self.embedding_weight = embedding_weight
         self.graph_weight = graph_weight
-        self.execution_weight = execution_weight
+        self.signal_weight = signal_weight
 
-    def score(
+    def calculate_score(
         self,
-        semantic_score: float,
-        graph_score: float,
-        execution_score: float,
-    ) -> ScoreBreakdown:
-        """Calculate hybrid score from individual components.
+        embedding_similarity: float,
+        graph_distance: float,
+        execution_signal_score: Optional[float] = None
+    ) -> float:
+        """Calculate hybrid score.
 
         Args:
-            semantic_score: Embedding similarity (0.0-1.0)
-            graph_score: Graph proximity (0.0-1.0)
-            execution_score: Execution signal relevance (0.0-1.0)
+            embedding_similarity: Semantic similarity [0, 1]
+            graph_distance: Graph distance (number of hops)
+            execution_signal_score: Execution signal score [0, 1] or None
 
         Returns:
-            ScoreBreakdown with all components and hybrid result
+            Hybrid score [0, 1]
         """
-        hybrid = (
-            self.semantic_weight * semantic_score
-            + self.graph_weight * graph_score
-            + self.execution_weight * execution_score
-        )
+        # Convert graph distance to proximity score: 1/(1+distance)
+        graph_proximity = 1.0 / (1.0 + graph_distance)
 
-        return ScoreBreakdown(
-            semantic_score=semantic_score,
-            graph_score=graph_score,
-            execution_score=execution_score,
-            hybrid_score=hybrid,
-        )
+        # If execution signals unavailable, fallback to 0.5·embedding + 0.5·graph
+        if execution_signal_score is None:
+            score = 0.5 * embedding_similarity + 0.5 * graph_proximity
+        else:
+            score = (
+                self.embedding_weight * embedding_similarity +
+                self.graph_weight * graph_proximity +
+                self.signal_weight * execution_signal_score
+            )
 
-    def score_query(
-        self,
-        query_embedding: list[float],
-        candidate_embedding: list[float],
-        graph_distance: int,
-        has_execution_signals: bool,
-    ) -> ScoreBreakdown:
-        """Score a candidate node for a query.
-
-        Args:
-            query_embedding: Query embedding vector
-            candidate_embedding: Candidate node embedding vector
-            graph_distance: Number of hops from query-related nodes
-            has_execution_signals: Whether candidate appears in logs/traces
-
-        Returns:
-            ScoreBreakdown with all scoring components
-
-        TODO: Implement actual scoring logic
-        - Cosine similarity for semantic score
-        - 1/(1+graph_distance) for graph score
-        - Binary or continuous for execution score
-        """
-        # Placeholder implementation
-        semantic_score = 0.8  # TODO: Calculate cosine similarity
-        graph_score = 1.0 / (1.0 + graph_distance)  # Distance-based decay
-        execution_score = 1.0 if has_execution_signals else 0.0
-
-        return self.score(semantic_score, graph_score, execution_score)
+        return max(0.0, min(1.0, score))

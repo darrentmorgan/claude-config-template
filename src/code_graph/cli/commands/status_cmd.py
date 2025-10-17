@@ -18,37 +18,53 @@ def status(ctx: click.Context, detailed: bool) -> None:
     """
     click.echo("📊 Code Graph Status\n")
 
-    # TODO: Implement actual status checking
-    # 1. Connect to Memgraph
-    # 2. Query index metadata
-    # 3. Get node/edge counts
-    # 4. Check last index time
-    # 5. Calculate coverage percentage
-    # 6. Check WAL health
+    # Get indexer from context
+    indexer = ctx.obj.get("indexer")
 
-    click.echo("Repository: /path/to/repo")
-    click.echo("Last indexed: Not yet indexed")
-    click.echo("Index size: 0 MB\n")
+    if not indexer:
+        click.echo("⚠️  No index found. Run 'code-graph index' to create an index.\n")
+        click.echo("Repository: Not indexed")
+        click.echo("Last indexed: Never")
+        click.echo("Index size: 0 MB\n")
+
+        click.echo("Graph Statistics:")
+        click.echo("├─ Files: 0")
+        click.echo("├─ Modules: 0")
+        click.echo("├─ Classes: 0")
+        click.echo("├─ Functions: 0")
+        click.echo("├─ Tests: 0")
+        click.echo("└─ Total Nodes: 0\n")
+
+        click.echo("Relationships:")
+        click.echo("└─ Total Edges: 0\n")
+        return
+
+    # Get statistics from graph store
+    store = indexer.store
+    num_files = len(store.files)
+    num_functions = len(store.functions)
+    num_edges = len(store.edges)
+
+    # Calculate total nodes
+    total_nodes = num_files + num_functions
+
+    click.echo(f"✅ Index is active\n")
 
     click.echo("Graph Statistics:")
-    click.echo("├─ Files: 0")
-    click.echo("├─ Modules: 0")
-    click.echo("├─ Classes: 0")
-    click.echo("├─ Functions: 0")
-    click.echo("├─ Tests: 0")
-    click.echo("└─ Total Nodes: 0\n")
+    click.echo(f"├─ Files: {num_files}")
+    click.echo(f"├─ Functions: {num_functions}")
+    click.echo(f"└─ Total Nodes: {total_nodes}\n")
 
     click.echo("Relationships:")
-    click.echo("├─ CONTAINS: 0")
-    click.echo("├─ IMPORTS: 0")
-    click.echo("├─ CALLS: 0")
-    click.echo("├─ INHERITS: 0")
-    click.echo("├─ READS_WRITES: 0")
-    click.echo("├─ TESTS: 0")
-    click.echo("└─ Total Edges: 0\n")
+    click.echo(f"└─ Total Edges: {num_edges}\n")
 
-    click.echo("Coverage: N/A (no index)")
-    click.echo("Memgraph: ⚠️  Not connected")
-    click.echo("WAL: ⚠️  Not configured\n")
+    if detailed and store.files:
+        click.echo("Recent Files:")
+        for file_id, file_node in list(store.files.items())[:10]:
+            click.echo(f"  • {file_node.path}")
+        if num_files > 10:
+            click.echo(f"  ... and {num_files - 10} more\n")
 
-    click.echo("⚠️  This is a prototype - run 'code-graph index' to create an index")
+    click.echo("Storage: In-memory (MVP)")
+    click.echo("Memgraph: ⚠️  Not yet integrated (planned)")
+    click.echo("WAL: ⚠️  Not yet implemented (planned)\n")

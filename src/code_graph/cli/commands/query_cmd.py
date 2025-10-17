@@ -1,6 +1,8 @@
 """CLI command for querying relevant code."""
 
 import click
+import json
+from code_graph.retrieval.query_engine import QueryEngine
 
 
 @click.command()
@@ -45,25 +47,60 @@ def query(
         click.echo(f"  Max results: {max_results}")
         click.echo(f"  Max hops: {hops}")
 
-    # TODO: Implement actual query logic
-    # 1. Connect to Memgraph
-    # 2. Compute query embedding
-    # 3. Find semantically similar nodes
-    # 4. Calculate graph distances
-    # 5. Parse execution log (if provided)
-    # 6. Calculate hybrid scores
-    # 7. Build ContextPack with rationales
-    # 8. Format and display results
+    try:
+        # Get indexer from context (set by index command)
+        indexer = ctx.obj.get("indexer")
+        if not indexer:
+            click.echo("\n⚠️  No index found. Please run 'code-graph index' first.", err=True)
+            return
 
-    click.echo("\n⚠️  This is a prototype - actual querying not yet implemented")
-    click.echo("See src/code-graph/retrieval/ for scoring implementations")
+        # Create query engine
+        engine = QueryEngine(graph=indexer.store)
 
-    # Example output format
-    if format == "text":
-        click.echo("\n📄 Example Results (3 files, confidence: 0.92)\n")
-        click.echo("1. src/auth/register.py (score: 0.95) ⭐⭐⭐⭐⭐")
-        click.echo("   └─ Contains register_user() function")
-        click.echo("\n2. src/utils/validation.py (score: 0.88) ⭐⭐⭐⭐")
-        click.echo("   └─ Contains email validation utilities")
-        click.echo("\n3. src/models/user.py (score: 0.82) ⭐⭐⭐⭐")
-        click.echo("   └─ Defines User model with email field")
+        # Execute query
+        click.echo("\n📊 Searching code graph...")
+        results = engine.query(query, top_n=max_results)
+
+        # Format and display results
+        if format == "json":
+            # JSON output
+            output = {
+                "query": query,
+                "total_confidence": results.total_confidence,
+                "max_hops": results.max_hops,
+                "timestamp": results.retrieval_timestamp.isoformat(),
+                "files": [
+                    {
+                        "path": f.file_path,
+                        "relevance_score": f.relevance_score,
+                        "rationale": f.rationale,
+                    }
+                    for f in results.files
+                ],
+            }
+            click.echo(json.dumps(output, indent=2))
+
+        elif format == "files-only":
+            # Just file paths
+            for file_ref in results.files:
+                click.echo(file_ref.file_path)
+
+        else:  # text format
+            # Rich text output
+            if not results.files:
+                click.echo("\n❌ No relevant files found.")
+                return
+
+            click.echo(f"\n📄 Results ({len(results.files)} files, confidence: {results.total_confidence:.2f})\n")
+
+            for i, file_ref in enumerate(results.files, 1):
+                # Star rating based on score
+                stars = "⭐" * min(5, int(file_ref.relevance_score * 5))
+                click.echo(f"{i}. {file_ref.file_path} (score: {file_ref.relevance_score:.2f}) {stars}")
+                click.echo(f"   └─ {file_ref.rationale}\n")
+
+    except Exception as e:
+        click.echo(f"\n❌ Error during query: {e}", err=True)
+        if verbose:
+            import traceback
+            traceback.print_exc()

@@ -1,6 +1,7 @@
 """CLI command for indexing repositories."""
 
 import click
+from code_graph.indexer.main import Indexer
 
 
 @click.command()
@@ -57,14 +58,37 @@ def index(
         click.echo(f"  Parallel workers: {parallel}")
         click.echo(f"  Embeddings: {'disabled' if no_embeddings else 'enabled'}")
 
-    # TODO: Implement actual indexing logic
-    # 1. Connect to Memgraph
-    # 2. Scan repository for files
-    # 3. Parse files with appropriate parsers
-    # 4. Build graph nodes and edges
-    # 5. Store in Memgraph with WAL
-    # 6. Compute embeddings (if enabled)
-    # 7. Report statistics
+    try:
+        # Create indexer and index repository
+        indexer = Indexer()
 
-    click.echo("\n⚠️  This is a prototype - actual indexing not yet implemented")
-    click.echo("See src/code-graph/indexer/ for parser implementations")
+        # Store in context for other commands to access
+        ctx.obj["indexer"] = indexer
+
+        click.echo("\n📊 Indexing in progress...")
+        result = indexer.index_repository(path)
+
+        # Display results
+        if result.success:
+            click.echo(f"\n✅ Indexing completed successfully!")
+            click.echo(f"\n📈 Statistics:")
+            click.echo(f"  Files indexed: {result.files_indexed}")
+            click.echo(f"  Functions found: {result.functions_found}")
+
+            if result.errors:
+                click.echo(f"\n⚠️  {len(result.errors)} files had errors:")
+                for error in result.errors[:5]:  # Show first 5 errors
+                    click.echo(f"    • {error}")
+                if len(result.errors) > 5:
+                    click.echo(f"    ... and {len(result.errors) - 5} more")
+        else:
+            click.echo(f"\n❌ Indexing failed")
+            if result.errors:
+                for error in result.errors:
+                    click.echo(f"  • {error}")
+
+    except Exception as e:
+        click.echo(f"\n❌ Error during indexing: {e}", err=True)
+        if verbose:
+            import traceback
+            traceback.print_exc()

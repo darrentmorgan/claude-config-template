@@ -29,12 +29,18 @@ class BaseEdge(BaseModel):
     """Base class for all edge types.
 
     Attributes:
+        id: Unique identifier for the edge
         type: Type of relationship
+        source_id: ID of the source node
+        target_id: ID of the target node
         confidence: Confidence score (0.0-1.0)
         metadata: Additional relationship-specific data
     """
 
+    id: str = Field(default="", description="Unique edge identifier")
     type: EdgeType
+    source_id: str = Field(default="", description="Source node ID")
+    target_id: str = Field(default="", description="Target node ID")
     confidence: float = Field(..., ge=0.0, le=1.0)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
