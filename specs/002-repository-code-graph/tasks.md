@@ -13,7 +13,7 @@
 - Include exact file paths in descriptions
 
 ## Path Conventions
-- **Single project structure**: `src/code-graph/`, `tests/` at repository root
+- **Single project structure**: `src/code_graph/`, `tests/` at repository root
 - Per plan.md: Python 3.11+ project with modular organization
 
 ---
@@ -22,7 +22,7 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] **T001** Create project structure per plan.md (src/code-graph/, tests/, docs/)
+- [ ] **T001** Create project structure per plan.md (src/code_graph/, tests/, docs/)
 - [ ] **T002** Initialize Python project with poetry (pyproject.toml, dependencies from research.md)
 - [ ] **T003** [P] Configure linting (ruff/flake8) and formatting (black) tools
 - [ ] **T004** [P] Configure type checking with mypy
@@ -40,32 +40,32 @@
 
 ### Memgraph Setup
 - [ ] **T008** Write installation documentation for Memgraph (Docker + native) in docs/setup.md
-- [ ] **T009** Create Memgraph connection module in src/code-graph/storage/connection.py
-- [ ] **T010** Implement WAL configuration in src/code-graph/storage/wal_config.py
+- [ ] **T009** Create Memgraph connection module in src/code_graph/storage/connection.py
+- [ ] **T010** Implement WAL configuration in src/code_graph/storage/wal_config.py
 
 ### Graph Schema (from data-model.md)
-- [ ] **T011** Define graph schema (nodes, edges, indexes) in src/code-graph/storage/schema.py
-- [ ] **T012** Implement schema migration framework in src/code-graph/storage/migrations.py
-- [ ] **T013** [P] Create Pydantic models for FileNode in src/code-graph/models/nodes/file_node.py
-- [ ] **T014** [P] Create Pydantic models for ModuleNode in src/code-graph/models/nodes/module_node.py
-- [ ] **T015** [P] Create Pydantic models for ClassNode in src/code-graph/models/nodes/class_node.py
-- [ ] **T016** [P] Create Pydantic models for FunctionNode in src/code-graph/models/nodes/function_node.py
-- [ ] **T017** [P] Create Pydantic models for TestNode in src/code-graph/models/nodes/test_node.py
-- [ ] **T018** [P] Create Pydantic models for edge types (Contains, Imports, Calls, etc.) in src/code-graph/models/edges/
-- [ ] **T019** [P] Create Pydantic model for ContextPack in src/code-graph/models/context_pack.py
-- [ ] **T020** [P] Create Pydantic model for IndexSnapshot in src/code-graph/models/snapshot.py
-- [ ] **T021** [P] Create Pydantic model for WALEntry in src/code-graph/models/wal_entry.py
+- [ ] **T011** Define graph schema (nodes, edges, indexes) in src/code_graph/storage/schema.py
+- [ ] **T012** Implement schema migration framework in src/code_graph/storage/migrations.py
+- [ ] **T013** [P] Create Pydantic models for FileNode in src/code_graph/models/nodes/file_node.py
+- [ ] **T014** [P] Create Pydantic models for ModuleNode in src/code_graph/models/nodes/module_node.py
+- [ ] **T015** [P] Create Pydantic models for ClassNode in src/code_graph/models/nodes/class_node.py
+- [ ] **T016** [P] Create Pydantic models for FunctionNode in src/code_graph/models/nodes/function_node.py
+- [ ] **T017** [P] Create Pydantic models for TestNode in src/code_graph/models/nodes/test_node.py
+- [ ] **T018** [P] Create Pydantic models for edge types (Contains, Imports, Calls, etc.) in src/code_graph/models/edges/
+- [ ] **T019** [P] Create Pydantic model for ContextPack in src/code_graph/models/context_pack.py
+- [ ] **T020** [P] Create Pydantic model for IndexSnapshot in src/code_graph/models/snapshot.py
+- [ ] **T021** [P] Create Pydantic model for WALEntry in src/code_graph/models/wal_entry.py
 
 ### Base Parser Infrastructure
-- [ ] **T022** Create base parser interface in src/code-graph/indexer/parsers/base.py
-- [ ] **T023** Implement tree-sitter initialization and grammar loading in src/code-graph/indexer/tree_sitter_setup.py
-- [ ] **T024** Create error-tolerant parsing utilities in src/code-graph/indexer/error_tolerant.py
+- [ ] **T022** Create base parser interface in src/code_graph/indexer/parsers/base.py
+- [ ] **T023** Implement tree-sitter initialization and grammar loading in src/code_graph/indexer/tree_sitter_setup.py
+- [ ] **T024** Create error-tolerant parsing utilities in src/code_graph/indexer/error_tolerant.py
 
 ### Configuration & Utilities
-- [ ] **T025** Implement configuration management (.code-graph/config.yaml) in src/code-graph/config/loader.py
-- [ ] **T026** [P] Create logging infrastructure with correlation IDs in src/code-graph/utils/logging.py
-- [ ] **T027** [P] Create confidence scoring utilities in src/code-graph/utils/confidence.py
-- [ ] **T028** [P] Create validation utilities in src/code-graph/utils/validation.py
+- [ ] **T025** Implement configuration management (.code-graph/config.yaml) in src/code_graph/config/loader.py
+- [ ] **T026** [P] Create logging infrastructure with correlation IDs in src/code_graph/utils/logging.py
+- [ ] **T027** [P] Create confidence scoring utilities in src/code_graph/utils/confidence.py
+- [ ] **T028** [P] Create validation utilities in src/code_graph/utils/validation.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -93,45 +93,88 @@
 - [ ] **T038** [P] [US1] Integration test for query workflow ("fix the checkout timeout issue") in tests/integration/retrieval/test_query_checkout_timeout.py
 - [ ] **T039** [P] [US1] Integration test for context pack generation in tests/integration/retrieval/test_context_pack.py
 
+### T039.5 [GATE] Verify parser tests RED phase
+**CONSTITUTION CHECKPOINT**: Verify TDD RED phase before proceeding
+
+Run all parser tests and confirm they FAIL:
+```bash
+pytest tests/unit/parsers/ tests/unit/test_graph_builder.py tests/unit/test_relationship_extractor.py tests/unit/scoring/ tests/integration/ -v
+```
+
+**Acceptance**:
+- All tests in T029-T039 execute and FAIL
+- Failure messages indicate missing implementations
+- Document failure output in commit message or PR description
+
+**Dependencies**: T029-T039
+**Unlocks**: T040-T062
+
+---
+
 ### Implementation for User Story 1
 
 #### Language-Specific Parsers
-- [ ] **T040** [P] [US1] Implement Python parser (tree-sitter-python) in src/code-graph/indexer/parsers/python.py
-- [ ] **T041** [P] [US1] Implement TypeScript parser (tree-sitter-typescript) in src/code-graph/indexer/parsers/typescript.py
-- [ ] **T042** [P] [US1] Implement Go parser (tree-sitter-go) in src/code-graph/indexer/parsers/go.py
-- [ ] **T043** [P] [US1] Implement Java parser (tree-sitter-java) in src/code-graph/indexer/parsers/java.py
+- [X] **T040** [P] [US1] Implement Python parser (tree-sitter-python) in src/code_graph/indexer/parsers/python_parser.py
+- [X] **T041** [P] [US1] Implement TypeScript parser (tree-sitter-typescript) in src/code_graph/indexer/parsers/typescript_parser.py
+- [X] **T042** [P] [US1] Implement Go parser (tree-sitter-go) in src/code_graph/indexer/parsers/go_parser.py
+- [ ] **T043** [P] [US1] Implement Java parser (tree-sitter-java) in src/code_graph/indexer/parsers/java.py
 
 #### Graph Building
-- [ ] **T044** [US1] Implement graph builder (AST → graph nodes) in src/code-graph/indexer/graph_builder.py (depends on T040-T043)
-- [ ] **T045** [US1] Implement relationship extractor (imports, calls, inheritance) in src/code-graph/indexer/relationship_extractor.py (depends on T044)
+- [ ] **T044** [US1] Implement graph builder (AST → graph nodes) in src/code_graph/indexer/graph_builder.py (depends on T040-T043)
+- [ ] **T045** [US1] Implement relationship extractor (imports, calls, inheritance) in src/code_graph/indexer/relationship_extractor.py (depends on T044)
 
 #### Storage Operations
-- [ ] **T046** [US1] Implement graph CRUD operations in src/code-graph/storage/graph_store.py (depends on T011-T021)
-- [ ] **T047** [US1] Implement WAL write operations in src/code-graph/storage/wal.py (depends on T010)
-- [ ] **T048** [US1] Implement snapshot creation in src/code-graph/storage/snapshot.py (depends on T046)
+- [ ] **T046** [US1] Implement graph CRUD operations in src/code_graph/storage/graph_store.py (depends on T011-T021)
+- [ ] **T047** [US1] Implement WAL write operations in src/code_graph/storage/wal.py (depends on T010)
+- [ ] **T048** [US1] Implement snapshot creation in src/code_graph/storage/snapshot.py (depends on T046)
 
 #### Semantic Embeddings
-- [ ] **T049** [P] [US1] Implement Nomic Embed Code integration in src/code-graph/retrieval/embeddings.py
-- [ ] **T050** [US1] Implement embedding cache (LRU) in src/code-graph/retrieval/embedding_cache.py (depends on T049)
+- [ ] **T049** [P] [US1] Implement Nomic Embed Code integration in src/code_graph/retrieval/embeddings.py
+- [ ] **T050** [US1] Implement embedding cache (LRU) in src/code_graph/retrieval/embedding_cache.py (depends on T049)
 
 #### Hybrid Scoring
-- [ ] **T051** [P] [US1] Implement graph distance calculation (BFS, shortest path) in src/code-graph/retrieval/graph_distance.py
-- [ ] **T052** [P] [US1] Implement execution signals parser (logs, traces) in src/code-graph/retrieval/execution_signals.py
-- [ ] **T053** [US1] Implement hybrid scorer (0.4·semantic + 0.4·graph + 0.2·execution) in src/code-graph/retrieval/hybrid_scorer.py (depends on T049, T051, T052)
+- [ ] **T051** [P] [US1] Implement graph distance calculation (BFS, shortest path) in src/code_graph/retrieval/graph_distance.py
+- [ ] **T052** [P] [US1] Implement execution signals parser (logs, traces) in src/code_graph/retrieval/execution_signals.py
+- [ ] **T053** [US1] Implement hybrid scorer (0.4·semantic + 0.4·graph + 0.2·execution) in src/code_graph/retrieval/hybrid_scorer.py (depends on T049, T051, T052)
 
 #### Context Assembly
-- [ ] **T054** [US1] Implement context pack builder (files + rationales + scores) in src/code-graph/retrieval/context_pack.py (depends on T053)
+- [ ] **T054** [US1] Implement context pack builder (files + rationales + scores) in src/code_graph/retrieval/context_pack.py (depends on T053)
 
 #### Full Indexing Workflow
-- [ ] **T055** [US1] Implement main indexer orchestrator in src/code-graph/indexer/main.py (depends on T044, T045, T046, T047)
+- [ ] **T055** [US1] Implement main indexer orchestrator in src/code_graph/indexer/main.py (depends on T044, T045, T046, T047)
 
 #### Query Interface
-- [ ] **T056** [US1] Implement query engine (natural language → context pack) in src/code-graph/retrieval/query_engine.py (depends on T054)
+- [ ] **T056** [US1] Implement query engine (natural language → context pack) in src/code_graph/retrieval/query_engine.py (depends on T054)
+
+#### Agent Integration (FR-013 Core Requirement)
+
+- [ ] **T056.5** [US1] Write agent integration test
+**BLOCKING DEPENDENCY**: MUST write test BEFORE T056.7 implementation (TDD RED FIRST)
+
+Create automated test verifying context pack delivery to agent delegation system:
+- `tests/integration/test_agent_integration.py`
+  - Test context pack JSON serialization
+  - Test automatic invocation on agent query
+  - Test context pack contains top-N code snippets
+  - Test hybrid score ordering
+  - Test graceful fallback when graph unavailable
+
+**Acceptance**:
+- Test written and FAILS (RED phase verified)
+- Covers FR-013 automated delivery requirement
+- No implementation code written yet
+
+**Dependencies**: T052 (hybrid ranking), T056 (query interface)
+**Unlocks**: T056.7 (implementation)
+
+---
+
+- [ ] **T056.7** [US1] Implement agent context provider integration in src/code_graph/integration/agent_context.py (depends on T056.5)
 
 #### CLI Commands
-- [ ] **T057** [US1] Implement CLI "index" command in src/code-graph/cli/commands/index_cmd.py (depends on T055)
-- [ ] **T058** [US1] Implement CLI "query" command in src/code-graph/cli/commands/query_cmd.py (depends on T056)
-- [ ] **T059** [US1] Implement CLI "status" command in src/code-graph/cli/commands/status_cmd.py (depends on T046)
+- [ ] **T057** [US1] Implement CLI "index" command in src/code_graph/cli/commands/index_cmd.py (depends on T055)
+- [ ] **T058** [US1] Implement CLI "query" command in src/code_graph/cli/commands/query_cmd.py (depends on T056)
+- [ ] **T059** [US1] Implement CLI "status" command in src/code_graph/cli/commands/status_cmd.py (depends on T046)
 
 #### Error Handling & Logging
 - [ ] **T060** [US1] Add comprehensive error handling to indexer pipeline
@@ -157,24 +200,41 @@
 - [ ] **T067** [P] [US2] Integration test for unresolved import handling in tests/integration/indexing/test_unresolved_imports.py
 - [ ] **T068** [P] [US2] Integration test for query with broken code in tests/integration/retrieval/test_query_broken_code.py
 
+### T068.5 [GATE] Verify error tolerance tests RED phase
+**CONSTITUTION CHECKPOINT**: Verify TDD RED phase before proceeding
+
+Run error tolerance tests and confirm they FAIL:
+```bash
+pytest tests/unit/parsers/test_error_recovery.py tests/unit/test_partial_parsing.py tests/unit/test_confidence_scoring.py tests/integration/indexing/test_error_tolerance.py tests/integration/indexing/test_unresolved_imports.py tests/integration/retrieval/test_query_broken_code.py -v
+```
+
+**Acceptance**:
+- All tests in T063-T068 execute and FAIL
+- Failures show missing error recovery implementations
+
+**Dependencies**: T063-T068
+**Unlocks**: T069-T078
+
+---
+
 ### Implementation for User Story 2
 
 #### Error-Tolerant Parsing Extensions
-- [ ] **T069** [P] [US2] Implement error node detection in tree-sitter AST in src/code-graph/indexer/error_tolerant.py
-- [ ] **T070** [US2] Implement partial symbol extraction from broken files in src/code-graph/indexer/partial_extractor.py (depends on T069)
-- [ ] **T071** [US2] Implement confidence score calculation based on parse status in src/code-graph/utils/confidence.py (extends T027)
+- [ ] **T069** [P] [US2] Implement error node detection in tree-sitter AST in src/code_graph/indexer/error_tolerant.py
+- [ ] **T070** [US2] Implement partial symbol extraction from broken files in src/code_graph/indexer/partial_extractor.py (depends on T069)
+- [ ] **T071** [US2] Implement confidence score calculation based on parse status in src/code_graph/utils/confidence.py (extends T027)
 
 #### Unresolved Relationship Handling
-- [ ] **T072** [US2] Implement unresolved import tracking in src/code-graph/indexer/unresolved_tracker.py
+- [ ] **T072** [US2] Implement unresolved import tracking in src/code_graph/indexer/unresolved_tracker.py
 - [ ] **T073** [US2] Mark uncertain relationships with low confidence in graph builder (extends T044)
-- [ ] **T074** [US2] Implement warnings for confidence ≤ 0.70 in src/code-graph/utils/warnings.py
+- [ ] **T074** [US2] Implement warnings for confidence ≤ 0.70 in src/code_graph/utils/warnings.py
 
 #### Query Adjustments
-- [ ] **T075** [US2] Adjust hybrid scorer to handle low-confidence edges in src/code-graph/retrieval/hybrid_scorer.py (extends T053)
+- [ ] **T075** [US2] Adjust hybrid scorer to handle low-confidence edges in src/code_graph/retrieval/hybrid_scorer.py (extends T053)
 - [ ] **T076** [US2] Add confidence indicators to context pack results (extends T054)
 
 #### Error Reporting
-- [ ] **T077** [P] [US2] Implement parse error collection and reporting in src/code-graph/indexer/error_reporter.py
+- [ ] **T077** [P] [US2] Implement parse error collection and reporting in src/code_graph/indexer/error_reporter.py
 - [ ] **T078** [P] [US2] Add coverage metrics (percentage successfully indexed) to status command (extends T059)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - can index imperfect codebases and retrieve context with confidence warnings
@@ -197,26 +257,43 @@
 - [ ] **T084** [P] [US3] Integration test for new import detection in tests/integration/incremental/test_new_imports.py
 - [ ] **T085** [P] [US3] Integration test for function signature change in tests/integration/incremental/test_signature_change.py
 
+### T085.5 [GATE] Verify incremental update tests RED phase
+**CONSTITUTION CHECKPOINT**: Verify TDD RED phase before proceeding
+
+Run incremental update tests and confirm they FAIL:
+```bash
+pytest tests/unit/test_file_watcher.py tests/unit/test_diff_analyzer.py tests/unit/test_graph_updater.py tests/integration/incremental/ -v
+```
+
+**Acceptance**:
+- All tests in T079-T085 execute and FAIL
+- Failures indicate unimplemented incremental update logic
+
+**Dependencies**: T079-T085
+**Unlocks**: T086-T096
+
+---
+
 ### Implementation for User Story 3
 
 #### File Watching
-- [ ] **T086** [US3] Implement file system watcher (watchdog) in src/code-graph/incremental/file_watcher.py
-- [ ] **T087** [US3] Implement debounce logic for rapid changes in src/code-graph/incremental/debouncer.py (depends on T086)
+- [ ] **T086** [US3] Implement file system watcher (watchdog) in src/code_graph/incremental/file_watcher.py
+- [ ] **T087** [US3] Implement debounce logic for rapid changes in src/code_graph/incremental/debouncer.py (depends on T086)
 
 #### Diff Analysis
-- [ ] **T088** [US3] Implement AST diff analyzer (compare old/new tree-sitter trees) in src/code-graph/incremental/diff_analyzer.py
-- [ ] **T089** [US3] Identify changed symbols (functions, classes added/removed/modified) in src/code-graph/incremental/symbol_diff.py (depends on T088)
+- [ ] **T088** [US3] Implement AST diff analyzer (compare old/new tree-sitter trees) in src/code_graph/incremental/diff_analyzer.py
+- [ ] **T089** [US3] Identify changed symbols (functions, classes added/removed/modified) in src/code_graph/incremental/symbol_diff.py (depends on T088)
 
 #### Targeted Graph Updates
-- [ ] **T090** [US3] Implement targeted node updates (update only changed nodes) in src/code-graph/incremental/graph_updater.py
-- [ ] **T091** [US3] Implement affected edge re-extraction (re-analyze only edges touching changed nodes) in src/code-graph/incremental/edge_updater.py (depends on T090)
-- [ ] **T092** [US3] Invalidate cached embeddings for changed code in src/code-graph/retrieval/embedding_cache.py (extends T050)
+- [ ] **T090** [US3] Implement targeted node updates (update only changed nodes) in src/code_graph/incremental/graph_updater.py
+- [ ] **T091** [US3] Implement affected edge re-extraction (re-analyze only edges touching changed nodes) in src/code_graph/incremental/edge_updater.py (depends on T090)
+- [ ] **T092** [US3] Invalidate cached embeddings for changed code in src/code_graph/retrieval/embedding_cache.py (extends T050)
 
 #### WAL for Incremental Updates
-- [ ] **T093** [US3] Log incremental changes to WAL (CREATE_NODE, UPDATE_NODE, DELETE_NODE) in src/code-graph/storage/wal.py (extends T047)
+- [ ] **T093** [US3] Log incremental changes to WAL (CREATE_NODE, UPDATE_NODE, DELETE_NODE) in src/code_graph/storage/wal.py (extends T047)
 
 #### CLI Watch Command
-- [ ] **T094** [US3] Implement CLI "watch" command in src/code-graph/cli/commands/watch_cmd.py (depends on T086, T090, T091)
+- [ ] **T094** [US3] Implement CLI "watch" command in src/code_graph/cli/commands/watch_cmd.py (depends on T086, T090, T091)
 
 #### Performance Optimization
 - [ ] **T095** [US3] Add performance logging for update latency (target: <2s)
@@ -243,21 +320,21 @@
 ### Implementation for User Story 4
 
 #### Graph Traversal
-- [ ] **T102** [P] [US4] Implement neighbor expansion (BFS within N hops) in src/code-graph/retrieval/neighbor_expansion.py
-- [ ] **T103** [US4] Implement edge type filtering for traversal in src/code-graph/retrieval/edge_filter.py (depends on T102)
+- [ ] **T102** [P] [US4] Implement neighbor expansion (BFS within N hops) in src/code_graph/retrieval/neighbor_expansion.py
+- [ ] **T103** [US4] Implement edge type filtering for traversal in src/code_graph/retrieval/edge_filter.py (depends on T102)
 
 #### Impact Analysis
-- [ ] **T104** [US4] Implement upstream dependency finder (what this uses) in src/code-graph/retrieval/upstream_finder.py
-- [ ] **T105** [US4] Implement downstream dependent finder (what uses this) in src/code-graph/retrieval/downstream_finder.py
-- [ ] **T106** [US4] Calculate blast radius (total affected nodes) in src/code-graph/retrieval/blast_radius.py (depends on T104, T105)
+- [ ] **T104** [US4] Implement upstream dependency finder (what this uses) in src/code_graph/retrieval/upstream_finder.py
+- [ ] **T105** [US4] Implement downstream dependent finder (what uses this) in src/code_graph/retrieval/downstream_finder.py
+- [ ] **T106** [US4] Calculate blast radius (total affected nodes) in src/code_graph/retrieval/blast_radius.py (depends on T104, T105)
 
 #### Visualization Data
-- [ ] **T107** [US4] Generate impact map data structure (upstream, downstream, depth) in src/code-graph/retrieval/impact_map.py (depends on T104, T105, T106)
-- [ ] **T108** [US4] Format relationship paths for display (tree, list, json formats) in src/code-graph/cli/formatters/relationship_formatter.py
+- [ ] **T107** [US4] Generate impact map data structure (upstream, downstream, depth) in src/code_graph/retrieval/impact_map.py (depends on T104, T105, T106)
+- [ ] **T108** [US4] Format relationship paths for display (tree, list, json formats) in src/code_graph/cli/formatters/relationship_formatter.py
 
 #### CLI Commands
-- [ ] **T109** [US4] Implement CLI "neighbors" command in src/code-graph/cli/commands/neighbors_cmd.py (depends on T102, T103)
-- [ ] **T110** [US4] Implement CLI "impact" command in src/code-graph/cli/commands/impact_cmd.py (depends on T107, T108)
+- [ ] **T109** [US4] Implement CLI "neighbors" command in src/code_graph/cli/commands/neighbors_cmd.py (depends on T102, T103)
+- [ ] **T110** [US4] Implement CLI "impact" command in src/code_graph/cli/commands/impact_cmd.py (depends on T107, T108)
 
 #### API Endpoints
 - [ ] **T111** [P] [US4] Implement GET /graph/neighbors API endpoint (from contracts/indexer-api.yaml)
@@ -283,16 +360,16 @@
 ### Implementation for User Story 5
 
 #### Test Relationship Tracking
-- [ ] **T117** [US5] Implement test-to-code mapping during indexing (TESTS edges) in src/code-graph/indexer/test_mapper.py
-- [ ] **T118** [US5] Track test coverage relationships (which tests cover which code) in src/code-graph/indexer/coverage_tracker.py (depends on T117)
+- [ ] **T117** [US5] Implement test-to-code mapping during indexing (TESTS edges) in src/code_graph/indexer/test_mapper.py
+- [ ] **T118** [US5] Track test coverage relationships (which tests cover which code) in src/code_graph/indexer/coverage_tracker.py (depends on T117)
 
 #### Test Selection
-- [ ] **T119** [US5] Implement direct test finder (unit tests for changed code) in src/code-graph/retrieval/test_selector.py
-- [ ] **T120** [US5] Implement indirect test finder (integration tests via call graph) in src/code-graph/retrieval/indirect_test_finder.py (depends on T119)
-- [ ] **T121** [US5] Calculate coverage percentage for selected tests in src/code-graph/retrieval/coverage_calculator.py (depends on T119, T120)
+- [ ] **T119** [US5] Implement direct test finder (unit tests for changed code) in src/code_graph/retrieval/test_selector.py
+- [ ] **T120** [US5] Implement indirect test finder (integration tests via call graph) in src/code_graph/retrieval/indirect_test_finder.py (depends on T119)
+- [ ] **T121** [US5] Calculate coverage percentage for selected tests in src/code_graph/retrieval/coverage_calculator.py (depends on T119, T120)
 
 #### CLI Commands
-- [ ] **T122** [US5] Implement CLI "tests" command in src/code-graph/cli/commands/tests_cmd.py (depends on T119, T120, T121)
+- [ ] **T122** [US5] Implement CLI "tests" command in src/code_graph/cli/commands/tests_cmd.py (depends on T119, T120, T121)
 - [ ] **T123** [US5] Add --format commands option for pytest/jest command generation
 
 #### API Endpoints
@@ -331,9 +408,9 @@
 - [ ] **T140** [P] Create example configuration files for common setups in examples/configs/
 
 ### Integration with Claude Code
-- [ ] **T141** Implement agent context provider integration in src/code-graph/integration/agent_context.py
-- [ ] **T142** Create documentation for agent delegation integration in docs/agent-integration.md
-- [ ] **T143** Write example agent configuration in examples/agents/backend-architect.json
+
+- [ ] **T141** [P] Create example agent configuration in examples/agents/backend-architect.json (depends on T056.7)
+- [ ] **T142** [P] Create documentation for agent delegation integration in docs/agent-integration.md (depends on T056.7)
 
 ### Additional Unit Tests (Property-Based)
 - [ ] **T144** [P] Property-based tests for graph invariants (no cycles in CONTAINS, INHERITS) in tests/unit/properties/test_graph_invariants.py
@@ -427,15 +504,15 @@ Task T033: "Unit test for hybrid scorer in tests/unit/scoring/test_hybrid_scorer
 # ... (all T029-T039 in parallel)
 
 # Phase 2: Verify tests FAIL, then implement parsers in parallel
-Task T040: "Implement Python parser in src/code-graph/indexer/parsers/python.py"
-Task T041: "Implement TypeScript parser in src/code-graph/indexer/parsers/typescript.py"
-Task T042: "Implement Go parser in src/code-graph/indexer/parsers/go.py"
-Task T043: "Implement Java parser in src/code-graph/indexer/parsers/java.py"
+Task T040: "Implement Python parser in src/code_graph/indexer/parsers/python.py"
+Task T041: "Implement TypeScript parser in src/code_graph/indexer/parsers/typescript.py"
+Task T042: "Implement Go parser in src/code_graph/indexer/parsers/go.py"
+Task T043: "Implement Java parser in src/code_graph/indexer/parsers/java.py"
 
 # Phase 3: Implement scoring components in parallel
-Task T049: "Implement Nomic Embed Code integration in src/code-graph/retrieval/embeddings.py"
-Task T051: "Implement graph distance calculation in src/code-graph/retrieval/graph_distance.py"
-Task T052: "Implement execution signals parser in src/code-graph/retrieval/execution_signals.py"
+Task T049: "Implement Nomic Embed Code integration in src/code_graph/retrieval/embeddings.py"
+Task T051: "Implement graph distance calculation in src/code_graph/retrieval/graph_distance.py"
+Task T052: "Implement execution signals parser in src/code_graph/retrieval/execution_signals.py"
 
 # Phase 4: Sequential integration (dependencies)
 Task T044: "Implement graph builder" (depends on T040-T043)
@@ -557,7 +634,7 @@ Task T054: "Implement context pack builder" (depends on T053)
 ### File Path Conventions
 
 All paths relative to repository root:
-- **Source**: `src/code-graph/`
+- **Source**: `src/code_graph/` (Python package naming: underscores, per PEP 8)
 - **Tests**: `tests/unit/`, `tests/integration/`, `tests/fixtures/`
 - **Docs**: `docs/`
 - **Examples**: `examples/`
